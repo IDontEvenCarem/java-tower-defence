@@ -18,10 +18,10 @@ public class TestStage implements StageKind {
         var paths = new ArrayList<EnemyPath>();
         var path = new EnemyPath();
         path.add(Point.of(0, 500));
-        path.add(Point.of(1300,  500));
+        path.add(Point.of(1275,  500));
         path.add(Point.of(1400, 800));
         path.add(Point.of(1400, 2800));
-
+        paths.add(path);
         return paths;
     }
 

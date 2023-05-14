@@ -29,4 +29,7 @@ public class RunningStage {
         return background;
     }
 
+    public List<EnemyPath> getPaths() {
+        return kind.getPaths();
+    }
 }

@@ -12,8 +12,6 @@ import win.idecm.towerdefence.stages.TestStage;
 import win.idecm.towerdefence.views.StageView;
 
 public class Game extends ApplicationAdapter {
-
-
 	GameView currentView;
 
 	@Override
