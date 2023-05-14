@@ -1,24 +1,21 @@
 package win.idecm.towerdefence;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import win.idecm.towerdefence.stages.TestStage;
+import win.idecm.towerdefence.views.MainMenuView;
 import win.idecm.towerdefence.views.StageView;
 
 public class Game extends ApplicationAdapter {
 
-
-	GameView currentView;
+	private GameView currentView;
 
 	@Override
 	public void create () {
-		currentView = new StageView(new RunningStage(new TestStage(), new Resources()));
+		currentView = new MainMenuView(new RunningStage(new TestStage(), new Resources()));
 		currentView.initialize();
 	}
 
@@ -26,7 +23,7 @@ public class Game extends ApplicationAdapter {
 	public void render () {
 		currentView.render();
 	}
-	
+
 	@Override
 	public void dispose () {
 		currentView.dispose();
