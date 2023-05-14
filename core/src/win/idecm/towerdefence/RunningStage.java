@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RunningStage {
+    StageKind kind;
+    Texture background;
+    List<EnemyKind> enemies;
+    List<Tower> runningTowers;
+    Resources resources;
+
     public RunningStage(StageKind kind, Resources initialResources) {
         this.kind = kind;
         background = new Texture(kind.getBackgroundTexturePath());
@@ -18,9 +24,9 @@ public class RunningStage {
         background.dispose();
     }
 
-    StageKind kind;
-    Texture background;
-    List<EnemyKind> enemies;
-    List<Tower> runningTowers;
-    Resources resources;
+
+    public Texture getBackground() {
+        return background;
+    }
+
 }
