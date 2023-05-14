@@ -12,4 +12,16 @@ public class Point {
     static public Point of(int x, int y) {
         return new Point(x, y);
     }
+
+    public Point dividedBy(int v) {
+        return new Point(x / v, y / v);
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 }

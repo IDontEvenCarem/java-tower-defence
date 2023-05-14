@@ -41,4 +41,7 @@ public class RunningStage {
         }
     }
 
+    public List<EnemyPath> getPaths() {
+        return kind.getPaths();
+    }
 }
