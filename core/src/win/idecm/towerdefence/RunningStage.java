@@ -3,7 +3,6 @@ package win.idecm.towerdefence;
 import com.badlogic.gdx.graphics.Texture;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class RunningStage {
@@ -21,7 +20,7 @@ public class RunningStage {
 
     StageKind kind;
     Texture background;
-    List<Enemy> enemies;
+    List<EnemyKind> enemies;
     List<Tower> runningTowers;
     Resources resources;
 }

@@ -1,6 +1,7 @@
 package win.idecm.towerdefence.stages;
 
 import win.idecm.towerdefence.EnemyPath;
+import win.idecm.towerdefence.Point;
 import win.idecm.towerdefence.StageKind;
 
 import java.util.ArrayList;
@@ -14,7 +15,14 @@ public class TestStage implements StageKind {
 
     @Override
     public List<EnemyPath> getPaths() {
-        return new ArrayList<>();
+        var paths = new ArrayList<EnemyPath>();
+        var path = new EnemyPath();
+        path.add(Point.of(0, 500));
+        path.add(Point.of(1300,  500));
+        path.add(Point.of(1400, 800));
+        path.add(Point.of(1400, 2800));
+
+        return paths;
     }
 
     @Override

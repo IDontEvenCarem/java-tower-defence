@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import win.idecm.towerdefence.stages.TestStage;
@@ -14,9 +13,7 @@ import win.idecm.towerdefence.stages.TestStage;
 public class Game extends ApplicationAdapter {
 	SpriteBatch batch;
 	RunningStage runningStage;
-
 	Camera camera;
-
 	Viewport viewport;
 	Stage stage;
 
@@ -37,7 +34,6 @@ public class Game extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 0, 1);
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(runningStage.background, 1920, 1080, 100, 100);
 		batch.draw(runningStage.background, 0, 0, 1920, 1080);
 		batch.end();
 	}
