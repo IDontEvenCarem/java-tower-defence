@@ -12,9 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import win.idecm.towerdefence.GameView;
-import win.idecm.towerdefence.Resources;
-import win.idecm.towerdefence.RunningStage;
+import win.idecm.towerdefence.*;
 import win.idecm.towerdefence.stages.TestStage;
 
 import java.util.Optional;
@@ -25,6 +23,8 @@ public class StageView implements GameView, InputProcessor {
 
     private int mouse_x = 0;
     private int mouse_y = 0;
+
+    private double previewPointOffset = 0.0;
 
     SpriteBatch batch;
     RunningStage runningStage;
@@ -45,6 +45,11 @@ public class StageView implements GameView, InputProcessor {
         camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
         shapeRenderer = new ShapeRenderer();
         Gdx.input.setInputProcessor(this);
+    }
+
+    public Point fixMapPoint (Point input) {
+        var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
+        return Point.of(input.getX()/mapAlignScale, T_HEIGHT - input.getY()/mapAlignScale);
     }
 
     @Override
@@ -68,14 +73,29 @@ public class StageView implements GameView, InputProcessor {
                 // Inside-image and outside-image coordinates are flipped (lib draws images upside down),
                 // so we need to flip coorinates
                 shapeRenderer.line(
-                    a.getX()/mapAlignScale,
-                    T_HEIGHT - a.getY()/mapAlignScale,
-                    b.getX()/mapAlignScale,
-                    T_HEIGHT - b.getY()/mapAlignScale
+                    (float) (a.getX()/mapAlignScale),
+                    (float) (T_HEIGHT - a.getY()/mapAlignScale),
+                    (float) (b.getX()/mapAlignScale),
+                    (float) (T_HEIGHT - b.getY()/mapAlignScale)
                 );
             }
             shapeRenderer.end();
         });
+
+        previewPointOffset += Gdx.graphics.getDeltaTime() * 1000.0f;
+        if (previewPointOffset > 250.0) {
+            previewPointOffset -= 250.0;
+        }
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for(double i = -250.0; i < runningStage.getPaths().get(0).getTotalLength() + 250.0f; i += 250.0) {
+            var position = runningStage.getPaths().get(0).getPointAtLength(i+previewPointOffset);
+            shapeRenderer.setColor(Color.GREEN);
+//            var real = viewport.project(new Vector2((float) position.getX(), (float)position.getY()));
+            var real = fixMapPoint(position);
+//            System.out.println("l:" + i + " x:" + real.x + " y:" + real.y);
+            shapeRenderer.circle((float) real.getX(), (float) real.getY(), 100.0f);
+        }
+        shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GRAY);

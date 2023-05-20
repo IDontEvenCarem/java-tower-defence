@@ -11,6 +11,7 @@ public class RunningStage {
     List<EnemyKind> enemies;
     List<Tower> runningTowers;
     Resources resources;
+    List<EnemyPath> savedPaths;
 
     public RunningStage(StageKind kind, Resources initialResources) {
         this.kind = kind;
@@ -18,6 +19,7 @@ public class RunningStage {
         enemies = new ArrayList<>();
         runningTowers = new ArrayList<>();
         resources = initialResources;
+        savedPaths = kind.getPaths();
     }
 
     public void dispose() {
@@ -30,6 +32,6 @@ public class RunningStage {
     }
 
     public List<EnemyPath> getPaths() {
-        return kind.getPaths();
+        return savedPaths;
     }
 }
