@@ -29,18 +29,6 @@ public class RunningStage {
         return background;
     }
 
-    private GameView gameView;
-
-    public void setGameView(GameView gameView) {
-        if (this.gameView != null) {
-            this.gameView.dispose();
-        }
-        this.gameView = gameView;
-        if (this.gameView != null) {
-            this.gameView.initialize();
-        }
-    }
-
     public List<EnemyPath> getPaths() {
         return kind.getPaths();
     }

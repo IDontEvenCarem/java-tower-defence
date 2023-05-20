@@ -17,6 +17,8 @@ import win.idecm.towerdefence.Resources;
 import win.idecm.towerdefence.RunningStage;
 import win.idecm.towerdefence.stages.TestStage;
 
+import java.util.Optional;
+
 public class StageView implements GameView, InputProcessor {
     static final int T_WIDTH = 16000;
     static final int T_HEIGHT = 9000;
@@ -46,7 +48,7 @@ public class StageView implements GameView, InputProcessor {
     }
 
     @Override
-    public void render() {
+    public Optional<GameView> render() {
         camera.update();
         ScreenUtils.clear(0, 0, 0, 1);
         batch.setProjectionMatrix(camera.combined);
@@ -80,6 +82,8 @@ public class StageView implements GameView, InputProcessor {
         var hovered = viewport.unproject(new Vector2(mouse_x, mouse_y));
         shapeRenderer.circle(hovered.x, hovered.y, 1000.0f);
         shapeRenderer.end();
+
+        return Optional.empty();
     }
 
     @Override

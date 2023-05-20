@@ -10,8 +10,9 @@ import win.idecm.towerdefence.views.MainMenuView;
 import win.idecm.towerdefence.views.StageView;
 
 public class Game extends ApplicationAdapter {
-
 	private GameView currentView;
+	private int lastResizeW = 0;
+	private int lastResizeH = 0;
 
 	@Override
 	public void create () {
@@ -21,7 +22,14 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		currentView.render();
+		var newView = currentView.render();
+		if (newView.isPresent()) {
+			currentView.dispose();
+			currentView = newView.get();
+			currentView.initialize();
+			// once a view changes, we still want it to get the sizing info through resize
+			currentView.resize(lastResizeW, lastResizeH);
+		}
 	}
 
 	@Override
@@ -31,6 +39,8 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void resize(int width, int height){
+		lastResizeW = width;
+		lastResizeH = height;
 		currentView.resize(width, height);
 	}
 }

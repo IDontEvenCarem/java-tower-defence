@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -13,6 +14,8 @@ import win.idecm.towerdefence.GameView;
 import win.idecm.towerdefence.Resources;
 import win.idecm.towerdefence.RunningStage;
 import win.idecm.towerdefence.stages.TestStage;
+
+import java.util.Optional;
 
 public class MainMenuView implements GameView {
     private static final float BUTTON_WIDTH = 569;
@@ -46,21 +49,11 @@ public class MainMenuView implements GameView {
         background = new Texture(Gdx.files.internal("MainMenuPanel.png"));
         startButton = new Texture(Gdx.files.internal("Start.png"));
         exitButton = new Texture(Gdx.files.internal("Exit.png"));
-
-        // Center the buttons
-        float startX = (camera.viewportWidth - BUTTON_WIDTH) / 2;
-        float startY = (camera.viewportHeight - BUTTON_HEIGHT - EXIT_BUTTON_HEIGHT - BUTTON_SPACING - MARGIN_BOTTOM) / 2 + MARGIN_BOTTOM + EXIT_BUTTON_HEIGHT;
-
-        startButtonBounds = new Rectangle(startX, startY, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-        // Adjust exit button position
-        float exitY = startY - BUTTON_SPACING - EXIT_BUTTON_HEIGHT;
-        exitButtonBounds = new Rectangle(startX, exitY, BUTTON_WIDTH, EXIT_BUTTON_HEIGHT);
     }
 
 
     @Override
-    public void render() {
+    public Optional<GameView> render() {
         camera.update();
         ScreenUtils.clear(0, 0, 0, 1);
         batch.setProjectionMatrix(camera.combined);
@@ -70,27 +63,17 @@ public class MainMenuView implements GameView {
         batch.draw(exitButton, exitButtonBounds.x, exitButtonBounds.y, exitButtonBounds.width, exitButtonBounds.height);
         batch.end();
 
-        if (Gdx.input.justTouched()) {
-            float y = Gdx.graphics.getHeight() - Gdx.input.getY();
+        var clickedPoint = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
 
-            if (startButtonBounds.contains(Gdx.input.getX(), y)) {
-                runningStage.setGameView(new StageView(new RunningStage(new TestStage(), new Resources())));
-            } else if (exitButtonBounds.contains(Gdx.input.getX(), y)) {
+        if (Gdx.input.justTouched()) {
+            if (startButtonBounds.contains(clickedPoint)) {
+                return Optional.of(new StageView(new RunningStage(new TestStage(), new Resources())));
+            } else if (exitButtonBounds.contains(clickedPoint)) {
                 Gdx.app.exit();
             }
         }
 
-        if (Gdx.input.justTouched()) {
-            float y = Gdx.graphics.getHeight() - Gdx.input.getY();
-
-            if (startButtonBounds.contains(Gdx.input.getX(), y)) {
-                runningStage.setGameView(new StageView(new RunningStage(new TestStage(), new Resources())));
-                dispose(); // usunięcie MainMenuView
-            } else if (exitButtonBounds.contains(Gdx.input.getX(), y)) {
-                Gdx.app.exit();
-            }
-        }
-
+        return Optional.empty();
     }
 
     @Override
@@ -103,5 +86,15 @@ public class MainMenuView implements GameView {
     public void resize(int width, int height) {
         viewport.update(width,height);
         camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
+
+        // Center the buttons
+        float startX = (camera.viewportWidth - BUTTON_WIDTH) / 2;
+        float startY = (camera.viewportHeight - BUTTON_HEIGHT - EXIT_BUTTON_HEIGHT - BUTTON_SPACING - MARGIN_BOTTOM) / 2 + MARGIN_BOTTOM + EXIT_BUTTON_HEIGHT;
+
+        startButtonBounds = new Rectangle(startX, startY, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+        // Adjust exit button position
+        float exitY = startY - BUTTON_SPACING - EXIT_BUTTON_HEIGHT;
+        exitButtonBounds = new Rectangle(startX, exitY, BUTTON_WIDTH, EXIT_BUTTON_HEIGHT);
     }
 }
