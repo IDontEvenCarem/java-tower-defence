@@ -1,6 +1,7 @@
 package win.idecm.towerdefence.views;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -13,9 +14,13 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import win.idecm.towerdefence.*;
+import win.idecm.towerdefence.enemies.TestEnemy;
 import win.idecm.towerdefence.stages.TestStage;
 
+import java.awt.event.KeyEvent;
 import java.util.Optional;
+
+import static com.badlogic.gdx.Gdx.input;
 
 public class StageView implements GameView, InputProcessor {
     static final int T_WIDTH = 16000;
@@ -44,7 +49,7 @@ public class StageView implements GameView, InputProcessor {
         viewport.apply();
         camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
         shapeRenderer = new ShapeRenderer();
-        Gdx.input.setInputProcessor(this);
+        input.setInputProcessor(this);
     }
 
     public Point fixMapPoint (Point input) {
@@ -54,48 +59,17 @@ public class StageView implements GameView, InputProcessor {
 
     @Override
     public Optional<GameView> render() {
+        runningStage.updateEnemies(Gdx.graphics.getDeltaTime());
+
         camera.update();
         ScreenUtils.clear(0, 0, 0, 1);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(runningStage.getBackground(), 0, 0, T_WIDTH, T_HEIGHT);
+        var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
+        renderEnemies();
         batch.end();
 
-        var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
-
-        runningStage.getPaths().forEach(enemyPath -> {
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(Color.RED);
-            for(int i = 0; i+1 < enemyPath.points.size(); i++) {
-                var a = enemyPath.points.get(i);
-                var b = enemyPath.points.get(i+1);
-                // Inside-image and outside-image coordinates are flipped (lib draws images upside down),
-                // so we need to flip coorinates
-                shapeRenderer.line(
-                    (float) (a.getX()/mapAlignScale),
-                    (float) (T_HEIGHT - a.getY()/mapAlignScale),
-                    (float) (b.getX()/mapAlignScale),
-                    (float) (T_HEIGHT - b.getY()/mapAlignScale)
-                );
-            }
-            shapeRenderer.end();
-        });
-
-        previewPointOffset += Gdx.graphics.getDeltaTime() * 1000.0f;
-        if (previewPointOffset > 250.0) {
-            previewPointOffset -= 250.0;
-        }
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        for(double i = -250.0; i < runningStage.getPaths().get(0).getTotalLength() + 250.0f; i += 250.0) {
-            var position = runningStage.getPaths().get(0).getPointAtLength(i+previewPointOffset);
-            shapeRenderer.setColor(Color.GREEN);
-//            var real = viewport.project(new Vector2((float) position.getX(), (float)position.getY()));
-            var real = fixMapPoint(position);
-//            System.out.println("l:" + i + " x:" + real.x + " y:" + real.y);
-            shapeRenderer.circle((float) real.getX(), (float) real.getY(), 100.0f);
-        }
-        shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GRAY);
@@ -104,6 +78,22 @@ public class StageView implements GameView, InputProcessor {
         shapeRenderer.end();
 
         return Optional.empty();
+    }
+
+    private void renderEnemies() {
+        runningStage.getEnemies().forEach(renderInfo -> {
+            System.out.println(renderInfo.position.getX() + " " + renderInfo.position.getY());
+            var fixedPos = fixMapPoint(renderInfo.position);
+            batch.draw(renderInfo.textureRegion,
+                (float) (fixedPos.getX() - 128),
+                (float) (fixedPos.getY() - 128),
+                256, 256
+            );
+        });
+    }
+
+    private void renderTowers() {
+
     }
 
     @Override
@@ -120,6 +110,10 @@ public class StageView implements GameView, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.SPACE) {
+            runningStage.spawnEnemy(new TestEnemy());
+            return true;
+        }
         return false;
     }
 
