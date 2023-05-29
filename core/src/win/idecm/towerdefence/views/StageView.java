@@ -6,10 +6,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -17,7 +17,6 @@ import win.idecm.towerdefence.*;
 import win.idecm.towerdefence.enemies.TestEnemy;
 import win.idecm.towerdefence.stages.TestStage;
 
-import java.awt.event.KeyEvent;
 import java.util.Optional;
 
 import static com.badlogic.gdx.Gdx.input;
@@ -36,6 +35,7 @@ public class StageView implements GameView, InputProcessor {
     Camera camera;
     Viewport viewport;
     ShapeRenderer shapeRenderer;
+    BitmapFont font;
 
     public StageView(RunningStage stage) {
         runningStage = stage;
@@ -47,14 +47,15 @@ public class StageView implements GameView, InputProcessor {
         camera = new OrthographicCamera();
         viewport = new FitViewport(T_WIDTH, T_HEIGHT, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2, 0);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         shapeRenderer = new ShapeRenderer();
+        font = new BitmapFont();
         input.setInputProcessor(this);
     }
 
-    public Point fixMapPoint (Point input) {
+    public Point fixMapPoint(Point input) {
         var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
-        return Point.of(input.getX()/mapAlignScale, T_HEIGHT - input.getY()/mapAlignScale);
+        return Point.of(input.getX() / mapAlignScale, T_HEIGHT - input.getY() / mapAlignScale);
     }
 
     @Override
@@ -70,6 +71,7 @@ public class StageView implements GameView, InputProcessor {
         renderEnemies();
         batch.end();
 
+        runningStage.getEnemies().forEach(enemy -> enemy.enemy.decreaseHealth(1));
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GRAY);
@@ -80,15 +82,22 @@ public class StageView implements GameView, InputProcessor {
         return Optional.empty();
     }
 
+
     private void renderEnemies() {
         runningStage.getEnemies().forEach(renderInfo -> {
             System.out.println(renderInfo.position.getX() + " " + renderInfo.position.getY());
             var fixedPos = fixMapPoint(renderInfo.position);
             batch.draw(renderInfo.textureRegion,
-                (float) (fixedPos.getX() - 128),
-                (float) (fixedPos.getY() - 128),
-                256, 256
+                    (float) (fixedPos.getX() - 128),
+                    (float) (fixedPos.getY() - 128),
+                    512, 512
             );
+
+            String healthText = "HP: " + renderInfo.enemy.getHealth();
+            float textX = (float) (fixedPos.getX() - 64);
+            float textY = (float) (fixedPos.getY() - 256);
+            font.getData().setScale(10.0f);
+            font.draw(batch, healthText, textX, textY);
         });
     }
 
@@ -100,12 +109,13 @@ public class StageView implements GameView, InputProcessor {
     public void dispose() {
         batch.dispose();
         runningStage.dispose();
+        font.dispose();
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height);
-        camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
+        viewport.update(width, height);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
     }
 
     @Override

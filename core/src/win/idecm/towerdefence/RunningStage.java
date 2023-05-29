@@ -26,8 +26,7 @@ public class RunningStage {
         runningTowers = new ArrayList<>();
         resources = initialResources;
         savedPaths = kind.getPaths();
-//        enemyTexture = new Texture("towerDefense_tilesheet@2.png");
-        enemyTexture = new Texture("badlogic.jpg");
+        enemyTexture = new Texture("EnemyArcher.png");
     }
 
     public void dispose() {
@@ -49,30 +48,36 @@ public class RunningStage {
             currPathIdx = 0;
         }
 
-        enemies.add(new RunningEnemy(kind, spawnIndex));
+        int initialHealth = 1000;
+        int damagePerSecond = 1;
+        enemies.add(new RunningEnemy(kind, spawnIndex, initialHealth, damagePerSecond));
     }
 
     public void updateEnemies(double timeDelta) {
-        // TODO: Collisions with projectiles, as well as projectiles
-        for(var enemy : enemies) {
+        for (var enemy : enemies) {
             enemy.move(timeDelta);
+
+            enemy.decreaseHealth(1);
         }
     }
 
     public class EnemyRenderInfo {
         public Point position;
         public TextureRegion textureRegion;
-        EnemyRenderInfo(Point p, TextureRegion tr) {
+        public RunningEnemy enemy;
+
+        public EnemyRenderInfo(Point p, TextureRegion tr, RunningEnemy enemy) {
             position = p;
             textureRegion = tr;
+            this.enemy = enemy;
         }
-    };
+    }
 
-    public Stream<EnemyRenderInfo> getEnemies () {
+    public Stream<EnemyRenderInfo> getEnemies() {
         return enemies.stream().map(runningEnemy -> new EnemyRenderInfo(
-            savedPaths.get(runningEnemy.getPathIndex()).getPointAtLength(runningEnemy.getPosition()),
-//                new TextureRegion(enemyTexture, 2944, 1664, 128, 128)
-            new TextureRegion(enemyTexture)
+                savedPaths.get(runningEnemy.getPathIndex()).getPointAtLength(runningEnemy.getPosition()),
+                new TextureRegion(enemyTexture),
+                runningEnemy
         ));
     }
 }
