@@ -17,6 +17,8 @@ public class RunningStage {
 
     Texture enemyTexture;
 
+    double fdPassiveHit = 0;
+
     private int currPathIdx = 0;
 
     public RunningStage(StageKind kind, Resources initialResources) {
@@ -54,11 +56,32 @@ public class RunningStage {
     }
 
     public void updateEnemies(double timeDelta) {
-        for (var enemy : enemies) {
+        var toBeRemoved = new ArrayList<RunningEnemy>();
+        fdPassiveHit += timeDelta;
+        System.out.println(fdPassiveHit);
+        for (RunningEnemy enemy : enemies) {
             enemy.move(timeDelta);
-
-            enemy.decreaseHealth(1);
+            if (fdPassiveHit >= 1.0) enemy.decreaseHealth(12);
+            if (enemy.getHealth() <= 0) {
+                toBeRemoved.add(enemy);
+            }
         }
+        if (fdPassiveHit >= 1.0) {
+            fdPassiveHit -= 1.0;
+        }
+        enemies.removeAll(toBeRemoved);
+    }
+
+    public int getGridSize() {
+        return kind.getGridSize();
+    }
+
+    public int getBackgroundWidth() {
+        return background.getWidth();
+    }
+
+    public int getBackgroundHeight() {
+        return background.getHeight();
     }
 
     public class EnemyRenderInfo {

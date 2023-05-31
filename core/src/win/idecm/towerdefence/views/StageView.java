@@ -22,7 +22,7 @@ import java.util.Optional;
 import static com.badlogic.gdx.Gdx.input;
 
 public class StageView implements GameView, InputProcessor {
-    static final int T_WIDTH = 16000;
+    static final int T_WIDTH = 14000;
     static final int T_HEIGHT = 9000;
 
     private int mouse_x = 0;
@@ -67,11 +67,14 @@ public class StageView implements GameView, InputProcessor {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(runningStage.getBackground(), 0, 0, T_WIDTH, T_HEIGHT);
+        batch.end();
+
+        drawGrid();
+
+        batch.begin();
         var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
         renderEnemies();
         batch.end();
-
-        runningStage.getEnemies().forEach(enemy -> enemy.enemy.decreaseHealth(1));
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GRAY);
@@ -80,6 +83,28 @@ public class StageView implements GameView, InputProcessor {
         shapeRenderer.end();
 
         return Optional.empty();
+    }
+
+    private void drawGrid() {
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        var gridSize = runningStage.getGridSize();
+        var limitX = runningStage.getBackgroundWidth();
+        var limitY = runningStage.getBackgroundHeight();
+
+        for(int x = 0; x <= limitX; x += gridSize) {
+            var a = fixMapPoint(Point.of(x, 0));
+            var b = fixMapPoint(Point.of(x, limitY));
+            shapeRenderer.line((float) a.getX(), (float) a.getY(), (float) b.getX(), (float) b.getY());
+        }
+        for(int y = 0; y <= limitY; y += gridSize) {
+            var a = fixMapPoint(Point.of(0, y));
+            var b = fixMapPoint(Point.of(limitX, y));
+            shapeRenderer.line((float) a.getX(), (float) a.getY(), (float) b.getX(), (float) b.getY());
+        }
+
+        shapeRenderer.end();
     }
 
 

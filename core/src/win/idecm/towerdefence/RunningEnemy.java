@@ -3,10 +3,13 @@ package win.idecm.towerdefence;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Random;
+
 public class RunningEnemy {
     private final EnemyKind kind;
     private final int pathIndex;
     private double position;
+    private double speed;
     private int health;
     private int damagePerSecond;
     private double lastDamageTime;
@@ -17,6 +20,8 @@ public class RunningEnemy {
         this.position = 0.0;
         this.health = health;
         this.damagePerSecond = damagePerSecond;
+        var r = new Random();
+        this.speed = kind.getSpeed() + r.nextInt(50);
         this.lastDamageTime = 0.0;
     }
 
@@ -25,7 +30,7 @@ public class RunningEnemy {
     }
 
     public double getSpeed() {
-        return kind.getSpeed();
+        return speed;
     }
 
     public double getPosition() {

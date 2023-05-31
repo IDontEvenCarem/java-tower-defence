@@ -6,4 +6,6 @@ public interface StageKind {
     String getName();
     List<EnemyPath> getPaths();
     String getBackgroundTexturePath();
+
+    Integer getGridSize();
 }
