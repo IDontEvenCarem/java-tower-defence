@@ -12,4 +12,12 @@ public class Resources {
     public Resources() {
 
     }
+
+    public void loseLife (int lost) {
+        life -= lost;
+    }
+
+    public void gainMoney (int gain) {
+        money += gain;
+    }
 }

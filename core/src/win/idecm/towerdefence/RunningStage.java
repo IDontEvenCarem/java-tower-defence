@@ -12,8 +12,10 @@ public class RunningStage {
     Texture background;
     List<RunningEnemy> enemies;
     List<Tower> runningTowers;
+
     Resources resources;
     List<EnemyPath> savedPaths;
+    double maxPathLength;
 
     Texture enemyTexture;
 
@@ -28,6 +30,7 @@ public class RunningStage {
         runningTowers = new ArrayList<>();
         resources = initialResources;
         savedPaths = kind.getPaths();
+        maxPathLength = savedPaths.stream().mapToDouble(p -> p.getTotalLength()).max().orElse(0) + 128; // 128 for enemies to leave the stage
         enemyTexture = new Texture("EnemyArcher.png");
     }
 
@@ -41,6 +44,10 @@ public class RunningStage {
 
     public List<EnemyPath> getPaths() {
         return savedPaths;
+    }
+
+    public Resources getResources() {
+        return resources;
     }
 
     public void spawnEnemy(EnemyKind kind) {
@@ -64,12 +71,23 @@ public class RunningStage {
             if (fdPassiveHit >= 1.0) enemy.decreaseHealth(12);
             if (enemy.getHealth() <= 0) {
                 toBeRemoved.add(enemy);
+                onEnemyKilled();
+            }
+            if (enemy.getPosition() > maxPathLength) {
+                toBeRemoved.add(enemy);
+                onEnemyLeaked();
             }
         }
         if (fdPassiveHit >= 1.0) {
             fdPassiveHit -= 1.0;
         }
         enemies.removeAll(toBeRemoved);
+    }
+
+    private void onEnemyLeaked() {
+    }
+
+    private void onEnemyKilled() {
     }
 
     public int getGridSize() {

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,15 +16,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import win.idecm.towerdefence.*;
 import win.idecm.towerdefence.enemies.TestEnemy;
-import win.idecm.towerdefence.stages.TestStage;
 
 import java.util.Optional;
 
 import static com.badlogic.gdx.Gdx.input;
 
 public class StageView implements GameView, InputProcessor {
-    static final int T_WIDTH = 14000;
-    static final int T_HEIGHT = 9000;
+    static final int MAP_WIDTH = 14000;
+    static final int TOTAL_HEIGHT = 9000;
+    static final int UI_WIDTH = 4000;
 
     private int mouse_x = 0;
     private int mouse_y = 0;
@@ -45,7 +46,7 @@ public class StageView implements GameView, InputProcessor {
     public void initialize() {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(T_WIDTH, T_HEIGHT, camera);
+        viewport = new FitViewport(MAP_WIDTH+UI_WIDTH, TOTAL_HEIGHT, camera);
         viewport.apply();
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         shapeRenderer = new ShapeRenderer();
@@ -54,8 +55,8 @@ public class StageView implements GameView, InputProcessor {
     }
 
     public Point fixMapPoint(Point input) {
-        var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
-        return Point.of(input.getX() / mapAlignScale, T_HEIGHT - input.getY() / mapAlignScale);
+        var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / TOTAL_HEIGHT;
+        return Point.of(input.getX() / mapAlignScale, TOTAL_HEIGHT - input.getY() / mapAlignScale);
     }
 
     @Override
@@ -63,18 +64,17 @@ public class StageView implements GameView, InputProcessor {
         runningStage.updateEnemies(Gdx.graphics.getDeltaTime());
 
         camera.update();
-        ScreenUtils.clear(0, 0, 0, 1);
         batch.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        ScreenUtils.clear(0, 0, 0, 1);
+
         batch.begin();
-        batch.draw(runningStage.getBackground(), 0, 0, T_WIDTH, T_HEIGHT);
+        batch.draw(runningStage.getBackground(), 0, 0, MAP_WIDTH, TOTAL_HEIGHT);
         batch.end();
 
         drawGrid();
-
-        batch.begin();
-        var mapAlignScale = ((float) runningStage.getBackground().getHeight()) / T_HEIGHT;
         renderEnemies();
-        batch.end();
+        drawUI();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GRAY);
@@ -85,9 +85,18 @@ public class StageView implements GameView, InputProcessor {
         return Optional.empty();
     }
 
+    private void drawUI() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.OLIVE);
+        shapeRenderer.rect(MAP_WIDTH, 0, UI_WIDTH, TOTAL_HEIGHT);
+        shapeRenderer.end();
+    }
+
     private void drawGrid() {
-        shapeRenderer.setProjectionMatrix(camera.combined);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
 
         var gridSize = runningStage.getGridSize();
         var limitX = runningStage.getBackgroundWidth();
@@ -105,10 +114,12 @@ public class StageView implements GameView, InputProcessor {
         }
 
         shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
 
     private void renderEnemies() {
+        batch.begin();
         runningStage.getEnemies().forEach(renderInfo -> {
             System.out.println(renderInfo.position.getX() + " " + renderInfo.position.getY());
             var fixedPos = fixMapPoint(renderInfo.position);
@@ -124,6 +135,7 @@ public class StageView implements GameView, InputProcessor {
             font.getData().setScale(10.0f);
             font.draw(batch, healthText, textX, textY);
         });
+        batch.end();
     }
 
     private void renderTowers() {
