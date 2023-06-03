@@ -19,6 +19,7 @@ import win.idecm.towerdefence.*;
 import win.idecm.towerdefence.enemies.TestEnemy;
 import win.idecm.towerdefence.towers.TestAoeTower;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import static com.badlogic.gdx.Gdx.input;
@@ -53,6 +54,7 @@ public class StageView implements GameView, InputProcessor {
         shapeRenderer = new ShapeRenderer();
         font = new BitmapFont();
         input.setInputProcessor(this);
+        shapeRenderer.setAutoShapeType(true);
     }
 
     public Point fixMapPoint(Point input) {
@@ -96,7 +98,7 @@ public class StageView implements GameView, InputProcessor {
 
         var gridSize = runningStage.getGridSize();
         var hoveredGrid = hoveredGrid();
-        var hoveredRenderable = gridToRenderable(hoveredGrid);
+        var hoveredRenderable = gridToRenderable(Point.of(hoveredGrid));
         shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
         shapeRenderer.rect((float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
         shapeRenderer.end();
@@ -120,13 +122,13 @@ public class StageView implements GameView, InputProcessor {
         return Point.of(runningStage.getGridSize(), runningStage.getGridSize());
     }
 
-    private Point hoveredGrid (float x, float y) {
+    private GridPoint hoveredGrid (float x, float y) {
         var gridSize = runningStage.getGridSize();
         var gx = Math.floor(x / gridSize);
         var gy = Math.ceil((TOTAL_HEIGHT - y) / gridSize);
-        return Point.of(gx, gy);
+        return GridPoint.of((int)gx, (int)gy);
     }
-    private Point hoveredGrid () {
+    private GridPoint hoveredGrid () {
         return hoveredGrid(mouse_x, mouse_y);
     }
 
@@ -188,16 +190,30 @@ public class StageView implements GameView, InputProcessor {
         batch.begin();
         camera.combined.getScaleX();
 
+        var renderedLocations = new HashMap<RunningTower, Point>();
+        var gridSize = runningStage.getGridSize();
+
         runningStage.getRunningTowers().forEach(tower -> {
             var location = tower.getLocation();
             var renderable = gridToRenderable(location);
             batch.draw(
                     tower.getTexture(),
                     (float) renderable.getX(), (float) renderable.getY(),
-                    runningStage.getGridSize(), runningStage.getGridSize()
+                    gridSize, gridSize
             );
+            renderedLocations.put(tower, renderable);
+        });
+
+        runningStage.getRunningTowers().forEach(tower -> {
+            tower.drawBatchEffects(renderedLocations.get(tower), gridSize, batch);
         });
         batch.end();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        runningStage.getRunningTowers().forEach(tower -> {
+            tower.drawShapeEffects(renderedLocations.get(tower), gridSize, shapeRenderer);
+        });
+        shapeRenderer.end();
     }
 
     @Override

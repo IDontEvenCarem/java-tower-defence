@@ -3,8 +3,7 @@ package win.idecm.towerdefence;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class RunningStage {
@@ -12,7 +11,7 @@ public class RunningStage {
     Texture background;
     List<RunningEnemy> enemies;
 
-    List<RunningTower> runningTowers;
+    Map<GridPoint, RunningTower> runningTowers;
 
     Resources resources;
     List<EnemyPath> savedPaths;
@@ -36,7 +35,7 @@ public class RunningStage {
         this.kind = kind;
         background = new Texture(kind.getBackgroundTexturePath());
         enemies = new ArrayList<>();
-        runningTowers = new ArrayList<>();
+        runningTowers = new HashMap<>();
         resources = initialResources;
         savedPaths = kind.getPaths();
         maxPathLength = savedPaths.stream().mapToDouble(EnemyPath::getTotalLength).max().orElse(0) + 128; // 128 for enemies to leave the stage
@@ -51,11 +50,12 @@ public class RunningStage {
     }
 
     private void processTowers(double timeDelta) {
-        runningTowers.forEach(tower -> {
+        runningTowers.entrySet().forEach(gridPointRunningTowerEntry -> {
+            var tower = gridPointRunningTowerEntry.getValue();
             var enemiesInRange = new ArrayList<RunningEnemy>();
             enemies.forEach(enemy -> {
                 var enemyLoc = getEnemyLocation(enemy);
-                if (enemyLoc.distanceTo(tower.location) <= tower.getRange()) {
+                if (enemyLoc.distanceTo(tower.getLocation()) <= tower.getRange()) {
                     enemiesInRange.add(enemy);
                 }
             });
@@ -79,10 +79,14 @@ public class RunningStage {
         return resources;
     }
 
-    public boolean tryPurchasingTower(TowerKind kind, Point location) {
+    public boolean tryPurchasingTower(TowerKind kind, GridPoint location) {
+        if (runningTowers.containsKey(location)) {
+            return false;
+        }
+
         if (getResources().hasMoneyToBuy(kind.getBasePrice())) {
             getResources().spendMoney(kind.getBasePrice());
-            runningTowers.add(new RunningTower(kind, location));
+            runningTowers.put(location, new RunningTower(kind, location));
             return true;
         } else {
             return false;
@@ -136,8 +140,8 @@ public class RunningStage {
         return background.getHeight();
     }
 
-    public List<RunningTower> getRunningTowers() {
-        return runningTowers;
+    public Collection<RunningTower> getRunningTowers() {
+        return runningTowers.values();
     }
 
     public static class EnemyRenderInfo {

@@ -16,6 +16,7 @@ public class Point {
     }
     static public Point of(double v) { return new Point(v,v); }
     static public Point of(Vector2 v) { return new Point(v.x, v.y); }
+    static public Point of(GridPoint p) { return new Point(p.getX(), p.getY()); }
 
     public String toString() {
         return "Point{X: " + getX() + ", Y:" + getY() + "}";
