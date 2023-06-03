@@ -23,8 +23,6 @@ public class RunningStage {
     int gridWidth;
     int gridHeight;
 
-    double fdPassiveHit = 0;
-
     private int currPathIdx = 0;
 
     public int getGridHeight() {
@@ -61,7 +59,7 @@ public class RunningStage {
                     enemiesInRange.add(enemy);
                 }
             });
-            tower.onGameTickWithEnemies(enemiesInRange);
+            tower.onGameTickWithEnemies(timeDelta, enemiesInRange);
         });
     }
 
@@ -104,10 +102,8 @@ public class RunningStage {
 
     public void updateEnemies(double timeDelta) {
         var toBeRemoved = new ArrayList<RunningEnemy>();
-        fdPassiveHit += timeDelta;
         for (RunningEnemy enemy : enemies) {
             enemy.move(timeDelta);
-            if (fdPassiveHit >= 1.0) enemy.decreaseHealth(12);
             if (enemy.getHealth() <= 0) {
                 toBeRemoved.add(enemy);
                 onEnemyKilled();
@@ -116,9 +112,6 @@ public class RunningStage {
                 toBeRemoved.add(enemy);
                 onEnemyLeaked();
             }
-        }
-        if (fdPassiveHit >= 1.0) {
-            fdPassiveHit -= 1.0;
         }
         enemies.removeAll(toBeRemoved);
     }

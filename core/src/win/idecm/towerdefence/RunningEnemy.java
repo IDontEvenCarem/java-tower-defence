@@ -10,8 +10,8 @@ public class RunningEnemy {
     private final int pathIndex;
     private double position;
     private double speed;
-    private int health;
-    private int damagePerSecond;
+    private double health;
+    private double damagePerSecond;
     private double lastDamageTime;
 
     public RunningEnemy(EnemyKind kind, int pathIndex, int damagePerSecond) {
@@ -37,10 +37,10 @@ public class RunningEnemy {
         return position;
     }
 
-    public int getHealth() {
+    public double getHealth() {
         return health;
     }
-    public int getMaxHealth() { return kind.getMaxHealth(); }
+    public double getMaxHealth() { return kind.getMaxHealth(); }
 
     public double getSize() { return kind.getSize(); }
 
@@ -48,7 +48,7 @@ public class RunningEnemy {
         position += getSpeed() * timeElapsed;
     }
 
-    public void dealDotDamage(int amount) {
+    public void dealDotDamage(double amount) {
         health -= amount;
         doDeathChecksAndChanges();
     }

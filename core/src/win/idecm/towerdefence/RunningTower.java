@@ -19,8 +19,8 @@ public class RunningTower {
         return kind.getBaseRange();
     }
 
-    public void onGameTickWithEnemies(List<RunningEnemy> enemies) {
-        kind.onGameTickWithEnemies(enemies);
+    public void onGameTickWithEnemies(double timeDelta, List<RunningEnemy> enemies) {
+        kind.onGameTickWithEnemies(timeDelta, enemies);
     }
 
     public Texture getTexture() {

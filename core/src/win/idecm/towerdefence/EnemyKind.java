@@ -4,5 +4,5 @@ public interface EnemyKind {
     String getTextureName();
     double getSpeed();
     double getSize();
-    int getMaxHealth();
+    double getMaxHealth();
 }

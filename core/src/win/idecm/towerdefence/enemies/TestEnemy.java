@@ -19,7 +19,7 @@ public class TestEnemy implements EnemyKind {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 100;
+    public double getMaxHealth() {
+        return 100.0;
     }
 }

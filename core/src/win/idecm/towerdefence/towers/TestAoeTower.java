@@ -28,9 +28,9 @@ public class TestAoeTower implements TowerKind {
     }
 
     @Override
-    public void onGameTickWithEnemies(List<RunningEnemy> enemies) {
+    public void onGameTickWithEnemies(double timeDelta, List<RunningEnemy> enemies) {
         enemies.forEach(enemy -> {
-            enemy.dealDotDamage(3);
+            enemy.dealDotDamage(25 * timeDelta);
         });
     }
 }

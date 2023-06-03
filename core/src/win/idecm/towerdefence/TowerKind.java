@@ -9,5 +9,5 @@ public interface TowerKind {
 
     String getTexturePath();
 
-    void onGameTickWithEnemies(List<RunningEnemy> enemies);
+    void onGameTickWithEnemies(double timeDelta, List<RunningEnemy> enemies);
 }

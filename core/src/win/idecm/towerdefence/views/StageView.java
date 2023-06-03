@@ -174,7 +174,7 @@ public class StageView implements GameView, InputProcessor {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         runningStage.getEnemies().forEach(renderInfo -> {
-            var currentHealthFrac = (float)renderInfo.enemy.getHealth() / (float)renderInfo.enemy.getMaxHealth();
+            var currentHealthFrac = renderInfo.enemy.getHealth() / renderInfo.enemy.getMaxHealth();
             var renderPos = gridToRenderable(renderInfo.position.addVector(Point.of(-renderInfo.size/2, renderInfo.size)));
             shapeRenderer.setColor(Color.RED);
             shapeRenderer.rect((float) renderPos.getX(), (float) renderPos.getY(), (float) (gridSize.getX() * renderInfo.size), 10);

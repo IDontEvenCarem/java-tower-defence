@@ -28,6 +28,6 @@ public class PiercerTower implements TowerKind {
     }
 
     @Override
-    public void onGameTickWithEnemies(List<RunningEnemy> enemies) {
+    public void onGameTickWithEnemies(double timeDelta, List<RunningEnemy> enemies) {
     }
 }
