@@ -14,14 +14,14 @@ public class RunningEnemy {
     private int damagePerSecond;
     private double lastDamageTime;
 
-    public RunningEnemy(EnemyKind kind, int pathIndex, int health, int damagePerSecond) {
+    public RunningEnemy(EnemyKind kind, int pathIndex, int damagePerSecond) {
         this.kind = kind;
         this.pathIndex = pathIndex;
-        this.position = 0.0;
-        this.health = health;
+        this.position = -kind.getSize();
+        this.health = kind.getMaxHealth();
         this.damagePerSecond = damagePerSecond;
         var r = new Random();
-        this.speed = kind.getSpeed() + r.nextInt(50);
+        this.speed = kind.getSpeed();
         this.lastDamageTime = 0.0;
     }
 
@@ -40,17 +40,28 @@ public class RunningEnemy {
     public int getHealth() {
         return health;
     }
+    public int getMaxHealth() { return kind.getMaxHealth(); }
+
+    public double getSize() { return kind.getSize(); }
 
     public void move(double timeElapsed) {
         position += getSpeed() * timeElapsed;
     }
 
+    public void dealDotDamage(int amount) {
+        health -= amount;
+        doDeathChecksAndChanges();
+    }
+
     public void decreaseHealth(int amount) {
         health -= amount;
+        doDeathChecksAndChanges();
+    }
+
+    private void doDeathChecksAndChanges () {
         if (health <= 0) {
             position = Double.POSITIVE_INFINITY;
             health = 0;
         }
     }
-
 }

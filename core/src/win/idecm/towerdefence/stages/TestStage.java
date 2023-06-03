@@ -16,7 +16,7 @@ public class TestStage implements StageKind {
     @Override
     public List<EnemyPath> getPaths() {
         var paths = new ArrayList<EnemyPath>();
-        var path = new EnemyPath();
+        var path = new EnemyPath(getGridSize());
         path.add(Point.of(0, 125));
         path.add(Point.of(475, 125));
         path.add(Point.of(475, 525));
@@ -38,7 +38,7 @@ public class TestStage implements StageKind {
     }
 
     @Override
-    public Integer getGridSize() {
+    public int getGridSize() {
         return 50;
     }
 }

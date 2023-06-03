@@ -10,7 +10,7 @@ public class Resources {
     }
 
     public Resources() {
-
+        this(10, 100);
     }
 
     public void loseLife (int lost) {
@@ -19,5 +19,20 @@ public class Resources {
 
     public void gainMoney (int gain) {
         money += gain;
+    }
+    public void spendMoney(int cost) {
+        money -= cost;
+    }
+
+    public boolean hasMoneyToBuy(int amount) {
+        return getMoney() >= amount;
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public int getMoney() {
+        return money;
     }
 }

@@ -10,6 +10,16 @@ public class TestEnemy implements EnemyKind {
 
     @Override
     public double getSpeed() {
-        return 150;
+        return 2;
+    }
+
+    @Override
+    public double getSize() {
+        return 0.75;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return 100;
     }
 }

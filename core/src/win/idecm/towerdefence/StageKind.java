@@ -7,5 +7,5 @@ public interface StageKind {
     List<EnemyPath> getPaths();
     String getBackgroundTexturePath();
 
-    Integer getGridSize();
+    int getGridSize();
 }

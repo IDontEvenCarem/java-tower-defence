@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyPath {
-    public EnemyPath() {
+    int gridSize;
+
+    public EnemyPath(int gridSize) {
+        this.gridSize = gridSize;
         points = new ArrayList<>();
         cummulativeDistances = new ArrayList<>();
     }
@@ -15,7 +18,7 @@ public class EnemyPath {
     private List<Double> cummulativeDistances;
 
     public void add(Point p) {
-        points.add(p);
+        points.add(p.dividedBy(gridSize));
     }
 
     public double getTotalLength() {
