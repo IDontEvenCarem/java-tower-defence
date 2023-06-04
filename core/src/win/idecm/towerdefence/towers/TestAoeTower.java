@@ -1,6 +1,9 @@
 package win.idecm.towerdefence.towers;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import win.idecm.towerdefence.Point;
 import win.idecm.towerdefence.RunningEnemy;
@@ -10,6 +13,8 @@ import win.idecm.towerdefence.TowerKind;
 import java.util.List;
 
 public class TestAoeTower implements TowerKind {
+    static Texture ringOfFire = new Texture("ring_of_fire_50.png");
+    static TextureRegion ringOfFireRegion = new TextureRegion(ringOfFire);
 
     @Override
     public String getName() {
@@ -39,16 +44,10 @@ public class TestAoeTower implements TowerKind {
     }
 
     @Override
-    public void drawShapeEffects(RunningTower running, Point renderLocation, int gridSize, ShapeRenderer sr) {
-        if (sr.getCurrentType() != ShapeRenderer.ShapeType.Line) {
-            sr.set(ShapeRenderer.ShapeType.Line);
-        }
-        sr.setColor(Color.ORANGE);
-        var range = running.getRange();
-        sr.circle(
-            (float) renderLocation.getX() + gridSize/2,
-            (float) renderLocation.getY() + gridSize/2,
-            (float) (range*gridSize)
+    public void drawTextureEffects(RunningTower running, Point renderLocation, int gridSize, SpriteBatch b) {
+        b.draw(ringOfFireRegion,
+            (float) (renderLocation.getX() - ringOfFire.getWidth()/2 + gridSize/2), (float) (renderLocation.getY() - ringOfFire.getHeight()/2 + gridSize/2),
+            175.0f, 175.0f, 350.0f, 350.0f, 1.0f, 1.0f, running.getTime() * 60.0f
         );
     }
 }

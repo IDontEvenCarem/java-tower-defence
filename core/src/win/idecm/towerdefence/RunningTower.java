@@ -10,6 +10,7 @@ public class RunningTower {
     TowerKind kind;
     GridPoint location;
     Texture texture;
+    float time = 0;
 
     RunningTower(TowerKind kind, GridPoint location) {
         this.kind = kind;
@@ -22,6 +23,7 @@ public class RunningTower {
     }
 
     public void onGameTickWithEnemies(double timeDelta, List<RunningEnemy> enemies) {
+        time += timeDelta;
         kind.onGameTickWithEnemies(timeDelta, enemies);
     }
 
@@ -43,5 +45,9 @@ public class RunningTower {
 
     public void drawShapeEffects(Point renderLocation, int gridSize, ShapeRenderer sr) {
         kind.drawShapeEffects(this, renderLocation, gridSize, sr);
+    }
+
+    public float getTime() {
+        return time;
     }
 }
