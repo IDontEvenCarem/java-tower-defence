@@ -19,10 +19,13 @@ public class RunningStage {
 
     Texture enemyTexture;
 
+    private Set<GridPoint> bannedGridPoints;
+
     int gridWidth;
     int gridHeight;
 
     private int currPathIdx = 0;
+
 
     public int getGridHeight() {
         return gridHeight;
@@ -42,6 +45,12 @@ public class RunningStage {
         enemyTexture = new Texture("EnemyArcher.png");
         gridWidth = background.getWidth() / kind.getGridSize();
         gridHeight = background.getHeight() / kind.getGridSize();
+        bannedGridPoints = kind.getBannedGridPoints();
+        
+        banPathGridPoints();
+    }
+
+    private void banPathGridPoints() {
     }
 
     public void update(double timeDelta) {
@@ -142,6 +151,10 @@ public class RunningStage {
 
     public Collection<RunningTower> getRunningTowers() {
         return runningTowers.values();
+    }
+
+    public Set<GridPoint> getBannedGridPoints() {
+        return kind.getBannedGridPoints();
     }
 
     public static class EnemyRenderInfo {

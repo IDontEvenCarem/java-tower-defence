@@ -20,7 +20,6 @@ public class RunningEnemy {
         this.position = -kind.getSize();
         this.health = kind.getMaxHealth();
         this.damagePerSecond = damagePerSecond;
-        var r = new Random();
         this.speed = kind.getSpeed();
         this.lastDamageTime = 0.0;
     }
@@ -60,7 +59,7 @@ public class RunningEnemy {
 
     private void doDeathChecksAndChanges () {
         if (health <= 0) {
-            position = Double.POSITIVE_INFINITY;
+            position = Double.NEGATIVE_INFINITY;
             health = 0;
         }
     }

@@ -18,12 +18,12 @@ public class TestAoeTower implements TowerKind {
 
     @Override
     public int getBasePrice() {
-        return 0;
+        return 50;
     }
 
     @Override
     public double getBaseRange() {
-        return 5;
+        return 3;
     }
 
     @Override

@@ -40,6 +40,8 @@ public class StageView implements GameView, InputProcessor {
     ShapeRenderer shapeRenderer;
     BitmapFont font;
 
+    UIMenu uiMenu;
+
     public StageView(RunningStage stage) {
         runningStage = stage;
     }
@@ -55,6 +57,7 @@ public class StageView implements GameView, InputProcessor {
         font = new BitmapFont();
         input.setInputProcessor(this);
         shapeRenderer.setAutoShapeType(true);
+        uiMenu = new UIMenu(MAP_WIDTH, UI_WIDTH, TOTAL_HEIGHT, runningStage.getResources(), runningStage.getBannedGridPoints());
     }
 
     public Point fixMapPoint(Point input) {
@@ -83,27 +86,10 @@ public class StageView implements GameView, InputProcessor {
         drawGrid();
         renderEnemies();
         renderTowers();
-        drawUI();
+
+        uiMenu.drawUi(batch, shapeRenderer, hoveredGrid(), gridToRenderable(Point.of(hoveredGrid())), runningStage.getGridSize());
 
         return Optional.empty();
-    }
-
-    private void drawUI() {
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.OLIVE);
-        shapeRenderer.rect(MAP_WIDTH, 0, UI_WIDTH, TOTAL_HEIGHT);
-
-
-        var gridSize = runningStage.getGridSize();
-        var hoveredGrid = hoveredGrid();
-        var hoveredRenderable = gridToRenderable(Point.of(hoveredGrid));
-        shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
-        shapeRenderer.rect((float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
-        shapeRenderer.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-
     }
 
     private Point screenToWorld (Point screen) {
@@ -251,7 +237,8 @@ public class StageView implements GameView, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         var unprojected = viewport.unproject(new Vector2(screenX, screenY));
-        runningStage.tryPurchasingTower(new TestAoeTower(), hoveredGrid(unprojected.x, unprojected.y));
+        uiMenu.onClick(unprojected.x, unprojected.y);
+//        runningStage.tryPurchasingTower(new TestAoeTower(), hoveredGrid(unprojected.x, unprojected.y));
         return true;
     }
 
@@ -275,6 +262,10 @@ public class StageView implements GameView, InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
+        if (mouse_x > MAP_WIDTH) {
+            uiMenu.scroll(amountY);
+            return true;
+        }
         return false;
     }
 }
