@@ -15,6 +15,21 @@ public class GridPoint {
         return new GridPoint(x, y);
     }
 
+    public static GridPoint of (Point p) {
+        return new GridPoint(
+            (int) Math.floor(p.getX()),
+            (int) Math.ceil(p.getY())
+        );
+    }
+
+    public static GridPoint fromPoint (Point p, int gridSize) {
+        return new GridPoint(
+            (int) Math.floor(p.getX() / gridSize),
+            (int) Math.ceil(p.getY() / gridSize)
+        );
+    }
+
+
     public int getX() {
         return x;
     }

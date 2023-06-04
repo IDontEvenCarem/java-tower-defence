@@ -41,16 +41,13 @@ public class RunningStage {
         runningTowers = new HashMap<>();
         resources = initialResources;
         savedPaths = kind.getPaths();
-        maxPathLength = savedPaths.stream().mapToDouble(EnemyPath::getTotalLength).max().orElse(0) + 128; // 128 for enemies to leave the stage
+        maxPathLength = savedPaths.stream().mapToDouble(EnemyPath::getTotalLength).max().orElse(0) + 1; // 1 for enemies to leave the stage
         enemyTexture = new Texture("EnemyArcher.png");
         gridWidth = background.getWidth() / kind.getGridSize();
         gridHeight = background.getHeight() / kind.getGridSize();
         bannedGridPoints = kind.getBannedGridPoints();
         
         banPathGridPoints();
-    }
-
-    private void banPathGridPoints() {
     }
 
     public void update(double timeDelta) {
@@ -154,7 +151,16 @@ public class RunningStage {
     }
 
     public Set<GridPoint> getBannedGridPoints() {
-        return kind.getBannedGridPoints();
+        return bannedGridPoints;
+    }
+
+    private void banPathGridPoints() {
+        getPaths().forEach(path -> {
+            for(double i = 0; i < path.getTotalLength(); i += 0.5) {
+                var point = GridPoint.of(path.getPointAtLength(i));
+                bannedGridPoints.add(point);
+            }
+        });
     }
 
     public static class EnemyRenderInfo {
