@@ -33,6 +33,10 @@ public class RunningTower {
         return Point.of(location);
     }
 
+    public Point getCenterPoint() {
+        return getLocation().addVector(Point.of(0.5, -0.5));
+    }
+
     public void drawBatchEffects(Point renderLocation, int gridSize, SpriteBatch b) {
         kind.drawTextureEffects(this, renderLocation, gridSize, b);
     }

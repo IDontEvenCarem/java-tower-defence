@@ -72,7 +72,8 @@ public class RunningStage {
             var enemiesInRange = new ArrayList<RunningEnemy>();
             enemies.forEach(enemy -> {
                 var enemyLoc = getEnemyLocation(enemy);
-                if (enemyLoc.distanceTo(tower.getLocation()) <= tower.getRange()) {
+                var towerLoc = tower.getCenterPoint();
+                if (enemyLoc.distanceTo(towerLoc) <= tower.getRange() + 0.05) {
                     enemiesInRange.add(enemy);
                 }
             });
