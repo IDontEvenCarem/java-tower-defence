@@ -2,6 +2,7 @@ package win.idecm.towerdefence;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import win.idecm.towerdefence.enemies.TestEnemy;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -25,6 +26,9 @@ public class RunningStage {
     int gridHeight;
 
     private int currPathIdx = 0;
+
+    private int enemiesSpawned = 0;
+    private double timeToSpawn = 0;
 
 
     public int getGridHeight() {
@@ -51,6 +55,13 @@ public class RunningStage {
     }
 
     public void update(double timeDelta) {
+        timeToSpawn += timeDelta;
+        if (timeToSpawn > 1.0) {
+            timeToSpawn -= 1.0;
+            spawnEnemy(new TestEnemy()).applyLifeMultiplier(1.0 + enemiesSpawned/100.0);
+            enemiesSpawned += 1;
+        }
+
         processTowers(timeDelta);
         updateEnemies(timeDelta);
     }
@@ -99,15 +110,16 @@ public class RunningStage {
         }
     }
 
-    public void spawnEnemy(EnemyKind kind) {
+    public RunningEnemy spawnEnemy(EnemyKind kind) {
         var spawnIndex = currPathIdx;
         currPathIdx += 1;
         if (currPathIdx == getPaths().size()) {
             currPathIdx = 0;
         }
 
-        int damagePerSecond = 1;
-        enemies.add(new RunningEnemy(kind, spawnIndex, damagePerSecond));
+        var enemy = new RunningEnemy(kind, spawnIndex);
+        enemies.add(enemy);
+        return enemy;
     }
 
     public void updateEnemies(double timeDelta) {

@@ -237,8 +237,10 @@ public class StageView implements GameView, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         var unprojected = viewport.unproject(new Vector2(screenX, screenY));
-        uiMenu.onClick(unprojected.x, unprojected.y);
-//        runningStage.tryPurchasingTower(new TestAoeTower(), hoveredGrid(unprojected.x, unprojected.y));
+        var action = uiMenu.onClick(unprojected.x, unprojected.y);
+        if (action.isPresent()) {
+            action.get().accept(runningStage);
+        }
         return true;
     }
 

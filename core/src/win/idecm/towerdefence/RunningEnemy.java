@@ -11,17 +11,15 @@ public class RunningEnemy {
     private double position;
     private double speed;
     private double health;
-    private double damagePerSecond;
-    private double lastDamageTime;
+    private double maxHealth;
 
-    public RunningEnemy(EnemyKind kind, int pathIndex, int damagePerSecond) {
+    public RunningEnemy(EnemyKind kind, int pathIndex) {
         this.kind = kind;
         this.pathIndex = pathIndex;
         this.position = -kind.getSize();
+        this.maxHealth = kind.getMaxHealth();
         this.health = kind.getMaxHealth();
-        this.damagePerSecond = damagePerSecond;
         this.speed = kind.getSpeed();
-        this.lastDamageTime = 0.0;
     }
 
     public int getPathIndex() {
@@ -39,9 +37,14 @@ public class RunningEnemy {
     public double getHealth() {
         return health;
     }
-    public double getMaxHealth() { return kind.getMaxHealth(); }
+    public double getMaxHealth() { return maxHealth; }
 
     public double getSize() { return kind.getSize(); }
+
+    public void applyLifeMultiplier(double mult) {
+        maxHealth *= mult;
+        health *= mult;
+    }
 
     public void move(double timeElapsed) {
         position += getSpeed() * timeElapsed;

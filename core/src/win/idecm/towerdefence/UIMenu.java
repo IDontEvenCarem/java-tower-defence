@@ -9,8 +9,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import win.idecm.towerdefence.towers.TestAoeTower;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class UIMenu {
     private Resources resources;
@@ -24,6 +27,8 @@ public class UIMenu {
     private Texture hoverNeutral;
     private Texture hoverDisallowed;
     private NinePatch nPatch;
+
+    private GridPoint lastHovered;
 
 
     public UIMenu (int left, int width, int height, Resources resources, Set<GridPoint> bannedGridPoints) {
@@ -41,13 +46,14 @@ public class UIMenu {
     }
 
     public void drawUi(SpriteBatch batch, ShapeRenderer shapeRenderer, GridPoint hovered, Point hoveredRenderable, int gridSize) {
+        lastHovered = hovered;
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-
         batch.begin();
 
-        nPatch.draw(batch, leftOffset, 0, totalWidth, totalHeight);
+        drawRect(batch, leftOffset, 0, totalWidth, totalHeight);
 
         font.setColor(Color.BLACK);
         font.getData().setScale(1.0f);
@@ -65,7 +71,6 @@ public class UIMenu {
 
         batch.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
-
     }
 
     public void drawHoveredGrid (Batch b) {
@@ -76,7 +81,16 @@ public class UIMenu {
 
     }
 
-    public void onClick(float x, float y) {
+    public Optional<Consumer<RunningStage>> onClick(float x, float y) {
+        if (x < leftOffset) {
+            return Optional.of(runningStage -> {
+                runningStage.tryPurchasingTower(new TestAoeTower(), lastHovered);
+            });
+        }
+        return Optional.empty();
+    }
 
+    public void drawRect(Batch b, int l, int t, int w, int h) {
+        nPatch.draw(b, l, t, w, h);
     }
 }
