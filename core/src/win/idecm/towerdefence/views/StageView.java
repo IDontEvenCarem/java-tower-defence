@@ -11,13 +11,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import win.idecm.towerdefence.*;
 import win.idecm.towerdefence.enemies.TestEnemy;
-import win.idecm.towerdefence.towers.TestAoeTower;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -176,12 +174,12 @@ public class StageView implements GameView, InputProcessor {
         batch.begin();
         camera.combined.getScaleX();
 
-        var renderedLocations = new HashMap<RunningTower, Point>();
+        var renderedLocations = new HashMap<Tower, Point>();
         var gridSize = runningStage.getGridSize();
 
         runningStage.getRunningTowers().forEach(tower -> {
             var location = tower.getLocation();
-            var renderable = gridToRenderable(location);
+            var renderable = gridToRenderable(Point.of(location));
             batch.draw(
                     tower.getTexture(),
                     (float) renderable.getX(), (float) renderable.getY(),

@@ -1,33 +1,40 @@
 package win.idecm.towerdefence.towers;
 
-import win.idecm.towerdefence.RunningEnemy;
-import win.idecm.towerdefence.TowerKind;
+import com.badlogic.gdx.graphics.Texture;
+import win.idecm.towerdefence.GridPoint;
+import win.idecm.towerdefence.Tower;
 
 import java.util.List;
 
-public class PiercerTower implements TowerKind {
+public class PiercerTower extends Tower {
+    static private final Texture towerTexture = new Texture("TowerStage1.png");
+
+    public PiercerTower(GridPoint location) {
+        super(location);
+    }
 
     @Override
     public String getName() {
-        return "Piercer";
+        return "Piercer Tower";
+    }
+
+    @Override
+    public Texture getTexture() {
+        return towerTexture;
     }
 
     @Override
     public int getBasePrice() {
-        return 100;
+        return 50;
     }
 
     @Override
     public double getBaseRange() {
-        return 100;
+        return 5;
     }
 
     @Override
-    public String getTexturePath() {
-        return null;
-    }
+    public void update(double timeDelta, List<EnemyWithPositioning> enemiesInRange) {
 
-    @Override
-    public void onGameTickWithEnemies(double timeDelta, List<RunningEnemy> enemies) {
     }
 }

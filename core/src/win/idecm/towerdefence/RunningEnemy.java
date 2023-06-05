@@ -1,10 +1,5 @@
 package win.idecm.towerdefence;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-
-import java.util.Random;
-
 public class RunningEnemy {
     private final EnemyKind kind;
     private final int pathIndex;
@@ -55,7 +50,7 @@ public class RunningEnemy {
         doDeathChecksAndChanges();
     }
 
-    public void decreaseHealth(int amount) {
+    public void dealDamage(double amount) {
         health -= amount;
         doDeathChecksAndChanges();
     }
