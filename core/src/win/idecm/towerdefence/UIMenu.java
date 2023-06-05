@@ -34,6 +34,17 @@ public class UIMenu {
     private GridPoint lastHovered;
 
     private Texture[] towerTextures;
+    private String[] towerDescriptions = {
+            "Tower Common, damage 10",
+            "Tower Level 2, damage 20",
+            "Tower Mag, damage 30",
+            "Tower Druid, damage 45",
+            "Tower Mome, damage 60",
+            "Tower tersa, damage 100"
+    };
+
+    private boolean showTipBox;
+    private String currentTowerDescription = "";
 
     public UIMenu(int left, int width, int height, Resources resources, Set<GridPoint> bannedGridPoints) {
         this.resources = resources;
@@ -65,8 +76,12 @@ public class UIMenu {
         drawStatusPart(batch);
         drawPurchasePart(batch);
 
-        if (hoveredRenderable.getX() >= leftOffset) {
+        if (hoveredRenderable.getX() >= leftOffset && !bannedGridPoints.contains(hovered)) {
+            showTipBox = true;
+            updateCurrentTowerDescription(hoveredRenderable);
             drawTipBox(batch);
+        } else {
+            showTipBox = false;
         }
 
         if (hoveredRenderable.getX() < leftOffset) {
@@ -77,6 +92,28 @@ public class UIMenu {
 
         batch.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    private void updateCurrentTowerDescription(Point hoveredRenderable) {
+        int towerIndex = getTowerIndex(hoveredRenderable);
+        if (towerIndex >= 0) {
+            currentTowerDescription = towerDescriptions[towerIndex];
+        } else {
+            currentTowerDescription = "";
+        }
+    }
+
+    private int getTowerIndex(Point hoveredRenderable) {
+        float iconSize = 48;
+        float iconSpacing = 8;
+        float startY = totalHeight - topPartFract * totalHeight - iconSize - 8;
+
+        int towerIndex = (int) ((startY - hoveredRenderable.getY()) / (iconSize + iconSpacing));
+        if (towerIndex >= 0 && towerIndex < towerTextures.length) {
+            return towerIndex;
+        } else {
+            return -1;
+        }
     }
 
     public void drawStatusPart(Batch b) {
@@ -105,6 +142,10 @@ public class UIMenu {
 
     public void drawTipBox(Batch b) {
         nPatch.draw(b, leftOffset - totalWidth, 0, totalWidth, (float) (totalHeight * 0.2));
+
+        font.getData().setScale(1.5f);
+        font.setColor(Color.BLACK);
+        font.draw(b, currentTowerDescription, leftOffset - totalWidth + 10, 20);
     }
 
     public void drawHoveredGrid(Batch b, GridPoint hovered, Point hoveredRenderable, float gridSize) {
@@ -130,6 +171,7 @@ public class UIMenu {
             String priceText = "$ " + (basePrice + (i * 100));
             float priceX = leftOffset + 8 + iconSize + 8;
             float priceY = y + iconSize / 2 + font.getLineHeight() / 2;
+            font.setColor(Color.BLACK);
             font.draw(b, priceText, priceX, priceY);
         }
     }
@@ -142,7 +184,7 @@ public class UIMenu {
     public Optional<Consumer<RunningStage>> onClick(float x, float y) {
         if (x < leftOffset) {
             return Optional.of(runningStage -> {
-                if(Math.random() > 0.5) {
+                if (Math.random() > 0.5) {
                     runningStage.tryPurchasingTower(new TestAoeTower(lastHovered));
                 } else {
                     runningStage.tryPurchasingTower(new PiercerTower(lastHovered));
