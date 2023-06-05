@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 import win.idecm.towerdefence.towers.PiercerTower;
 import win.idecm.towerdefence.towers.TestAoeTower;
 
@@ -144,9 +145,12 @@ public class UIMenu {
         nPatch.draw(b, leftOffset - totalWidth, 0, totalWidth, (float) (totalHeight * 0.2));
 
         font.getData().setScale(1.5f);
-        font.setColor(Color.BLACK);
-        font.draw(b, currentTowerDescription, leftOffset - totalWidth + 10, 20);
+        font.setColor(Color.WHITE);
+        float textX = leftOffset - totalWidth + 10;
+        float textY = (float) (totalHeight * 0.2) - 20;
+        font.draw(b, currentTowerDescription, textX, textY, totalWidth - 20, Align.topLeft, true);
     }
+
 
     public void drawHoveredGrid(Batch b, GridPoint hovered, Point hoveredRenderable, float gridSize) {
         if (bannedGridPoints.contains(hovered)) {
@@ -171,7 +175,7 @@ public class UIMenu {
             String priceText = "$ " + (basePrice + (i * 100));
             float priceX = leftOffset + 8 + iconSize + 8;
             float priceY = y + iconSize / 2 + font.getLineHeight() / 2;
-            font.setColor(Color.BLACK);
+            font.setColor(Color.WHITE);
             font.draw(b, priceText, priceX, priceY);
         }
     }
