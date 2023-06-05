@@ -87,7 +87,7 @@ public class StageView implements GameView, InputProcessor {
         renderEnemies();
         renderTowers();
 
-        uiMenu.drawUi(batch, shapeRenderer, hoveredGrid(), gridToRenderable(Point.of(hoveredGrid())), runningStage.getGridSize());
+        uiMenu.drawUi(runningStage, batch, shapeRenderer, hoveredGrid(), gridToRenderable(Point.of(hoveredGrid())), runningStage.getGridSize());
 
         return Optional.empty();
     }

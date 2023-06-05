@@ -32,8 +32,6 @@ public class UIMenu {
 
     private GridPoint lastHovered;
 
-    private SpriteBatch batch;
-
     public UIMenu (int left, int width, int height, Resources resources, Set<GridPoint> bannedGridPoints) {
         this.resources = resources;
         leftOffset = left;
@@ -48,14 +46,13 @@ public class UIMenu {
         this.bannedGridPoints = bannedGridPoints;
     }
 
-    public void drawUi(SpriteBatch batch, ShapeRenderer shapeRenderer, GridPoint hovered, Point hoveredRenderable, int gridSize) {
+    public void drawUi(RunningStage stage, SpriteBatch batch, ShapeRenderer shapeRenderer, GridPoint hovered, Point hoveredRenderable, int gridSize) {
         lastHovered = hovered;
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         batch.begin();
-        this.batch = batch;
 
         drawStatusPart(batch);
         drawPurchasePart(batch);
@@ -65,12 +62,7 @@ public class UIMenu {
         }
 
         if (hoveredRenderable.getX() < leftOffset) {
-            if (bannedGridPoints.contains(hovered)) {
-                batch.draw(hoverDisallowed, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
-            }
-            else {
-                batch.draw(hoverNeutral, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
-            }
+            drawHoveredGrid(batch, hovered, hoveredRenderable, gridSize);
         }
 
         batch.end();
@@ -83,8 +75,8 @@ public class UIMenu {
 
         font.setColor(Color.WHITE);
         font.getData().setScale(2.0f);
-        var moneydraw = font.draw(batch, "$  " + resources.getMoney(),  leftOffset + 20, totalHeight - 20);
-        var heartsdraw = font.draw(batch, "<3 " + resources.getLife(), leftOffset + 20, totalHeight - 25 - moneydraw.height);
+        var moneydraw = font.draw(b, "$  " + resources.getMoney(),  leftOffset + 20, totalHeight - 20);
+        var heartsdraw = font.draw(b, "<3 " + resources.getLife(), leftOffset + 20, totalHeight - 25 - moneydraw.height);
     }
 
     public void drawPurchasePart(Batch b) {
@@ -96,8 +88,13 @@ public class UIMenu {
         nPatch.draw(b, leftOffset - totalWidth, 0, totalWidth, (float) (totalHeight * 0.2));
     }
 
-    public void drawHoveredGrid (Batch b) {
-
+    public void drawHoveredGrid (Batch b, GridPoint hovered, Point hoveredRenderable, float gridSize) {
+        if (bannedGridPoints.contains(hovered)) {
+            b.draw(hoverDisallowed, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
+        }
+        else {
+            b.draw(hoverNeutral, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
+        }
     }
 
     public void scroll(float amount) {
@@ -111,9 +108,5 @@ public class UIMenu {
             });
         }
         return Optional.empty();
-    }
-
-    public void drawRect(Batch b, int l, int t, int w, int h) {
-        nPatch.draw(b, l, t, w, h);
     }
 }
