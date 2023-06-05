@@ -35,14 +35,16 @@ public class UIMenu {
     private GridPoint lastHovered;
 
     private Texture[] towerTextures;
+    private Texture levelUpArrowTexture;
     private String[] towerDescriptions = {
-            "Tower Common, damage 10",
-            "Tower Level 2, damage 20",
-            "Tower Mag, damage 30",
-            "Tower Druid, damage 45",
-            "Tower Mome, damage 60",
-            "Tower tersa, damage 100"
+            "Piercer Tower, Damage 50,   Level 1",
+            "Archer Tower, Damage 60,   Level 1",
+            "Druid Tower, Damage 70,   Level 1",
+            "Wizard Tower, Damage 85,   Level 1",
+            "Inferno Tower, Damage 110,   Level 1",
+            "Royal Tower, Damage 150,   Level 1"
     };
+    private int[] towerLevels;
 
     private boolean showTipBox;
     private String currentTowerDescription = "";
@@ -63,6 +65,13 @@ public class UIMenu {
         towerTextures = new Texture[6];
         for (int i = 0; i < 6; i++) {
             towerTextures[i] = new Texture("TowerStage" + (i + 1) + ".png");
+        }
+
+        levelUpArrowTexture = new Texture("LvlUpArrow.png");
+
+        towerLevels = new int[6];
+        for (int i = 0; i < 6; i++) {
+            towerLevels[i] = 1;
         }
     }
 
@@ -163,22 +172,34 @@ public class UIMenu {
     public void drawTowerIcons(Batch b) {
         float iconSize = 48;
         float iconSpacing = 8;
-        float startY = totalHeight - topPartFract * totalHeight - iconSize - 8; // Adjusted position to fit the tower icons
+        float startY = totalHeight - topPartFract * totalHeight - iconSize - 8; // Dostosowana pozycja do ikon wież
 
-        int basePrice = 100; // Base price for the first tower
+        int basePrice = 100; // Bazowa cena dla pierwszej wieży
         for (int i = 0; i < towerTextures.length; i++) {
             float y = startY - (iconSize + iconSpacing) * i;
             b.draw(towerTextures[i], leftOffset + 8, y, iconSize, iconSize);
 
-            // Draw tower price
+            // Rysuj cenę wieży
             font.getData().setScale(1.5f);
             String priceText = "$ " + (basePrice + (i * 100));
             float priceX = leftOffset + 8 + iconSize + 8;
             float priceY = y + iconSize / 2 + font.getLineHeight() / 2;
             font.setColor(Color.WHITE);
             font.draw(b, priceText, priceX, priceY);
+
+            // Rysuj poziom wieży
+            Texture levelArrow = new Texture("LvlUpArrow.png");
+            float arrowX = priceX + font.getCapHeight() + 50;
+            float arrowY = priceY - font.getLineHeight() / 2 - 5;
+            b.draw(levelArrow, arrowX, arrowY, 24, 24);
+            String towerLevel = "1";
+            float levelX = arrowX + 20;
+            float levelY = arrowY + 14;
+            font.getData().setScale(1.5f);
+            font.draw(b, towerLevel, levelX, levelY);
         }
     }
+
 
 
     public void scroll(float amount) {
