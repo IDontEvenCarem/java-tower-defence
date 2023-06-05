@@ -21,6 +21,7 @@ public class RunningStage {
     Texture enemyTexture;
 
     private Set<GridPoint> bannedGridPoints;
+    private List<Projectile> projectiles;
 
     int gridWidth;
     int gridHeight;
@@ -50,7 +51,7 @@ public class RunningStage {
         gridWidth = background.getWidth() / kind.getGridSize();
         gridHeight = background.getHeight() / kind.getGridSize();
         bannedGridPoints = kind.getBannedGridPoints();
-        
+        projectiles = new ArrayList<>();
         banPathGridPoints();
     }
 
@@ -63,7 +64,28 @@ public class RunningStage {
         }
 
         processTowers(timeDelta);
+        updateProjectiles(timeDelta);
         updateEnemies(timeDelta);
+    }
+
+    private void updateProjectiles(double timeDelta) {
+        var removalList = new ArrayList<Projectile>();
+        for(var proj : projectiles) {
+            var enemiesInRange = new ArrayList<Tower.EnemyWithPositioning>();
+            enemies.forEach(enemy -> {
+                var enemyLoc = getEnemyLocation(enemy);
+                var towerLoc = proj.getPosition();
+                if (enemyLoc.distanceSquaredTo(towerLoc) <= proj.getSquaredColiderSize()) {
+                    enemiesInRange.add(new Tower.EnemyWithPositioning(enemy, enemyLoc));
+                }
+            });
+
+            var wantToDelete = proj.update(timeDelta, enemiesInRange);
+            if (wantToDelete) {
+                removalList.add(proj);
+            }
+        }
+        projectiles.removeAll(removalList);
     }
 
     private void processTowers(double timeDelta) {
@@ -77,7 +99,10 @@ public class RunningStage {
                     enemiesInRange.add(new Tower.EnemyWithPositioning(enemy, enemyLoc));
                 }
             });
-            tower.update(timeDelta, enemiesInRange);
+            var proj = tower.update(timeDelta, enemiesInRange);
+            if (proj.isPresent()) {
+                projectiles.addAll(proj.get());
+            }
         });
     }
 
@@ -175,6 +200,10 @@ public class RunningStage {
                 bannedGridPoints.add(point);
             }
         });
+    }
+
+    public Collection<Projectile> getProjectiles() {
+        return projectiles;
     }
 
     public static class EnemyRenderInfo {

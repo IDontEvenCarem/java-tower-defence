@@ -10,12 +10,17 @@ import java.util.Optional;
 abstract public class Tower {
     GridPoint location;
     float time = 0;
+    double attackTime = 0;
 
     public abstract String getName();
     public abstract Texture getTexture();
     public abstract int getBasePrice();
     public abstract double getBaseRange();
-    abstract public void update(double timeDelta, List<EnemyWithPositioning> enemiesInRange);
+    abstract public Optional<List<Projectile>> update(double timeDelta, List<EnemyWithPositioning> enemiesInRange);
+
+    public double getBaseAttackDelay() {
+        return 1.0;
+    };
 
     public Tower(GridPoint location) {
         this.location = location;
@@ -51,11 +56,25 @@ abstract public class Tower {
         return time;
     }
 
-    Optional<RunningEnemy> pickClosest(List<EnemyWithPositioning> enemies) {
+    protected void updateTiming(double timeDelta) {
+        time += timeDelta;
+        attackTime += timeDelta;
+    }
+
+    protected boolean checkAttackTiming() {
+        if (attackTime >= getBaseAttackDelay()) {
+            attackTime = 0.0;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected Optional<EnemyWithPositioning> pickClosest(List<EnemyWithPositioning> enemies) {
         return enemies.stream().min((e1, e2) -> {
             var d1 = getCenterPoint().distanceSquaredTo(e1.position);
             var d2 = getCenterPoint().distanceSquaredTo(e2.position);
             return Double.compare(d1, d2);
-        }).map(enemyWithPositioning -> enemyWithPositioning.enemy);
+        });
     };
 }

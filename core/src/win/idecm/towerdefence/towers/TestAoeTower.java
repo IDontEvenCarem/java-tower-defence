@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import win.idecm.towerdefence.GridPoint;
 import win.idecm.towerdefence.Point;
+import win.idecm.towerdefence.Projectile;
 import win.idecm.towerdefence.Tower;
-import win.idecm.towerdefence.TowerKind;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TestAoeTower extends Tower {
     static Texture towerTexture = new Texture("TowerStage6.png");
@@ -40,10 +41,11 @@ public class TestAoeTower extends Tower {
     }
 
     @Override
-    public void update(double timeDelta, List<Tower.EnemyWithPositioning> enemies) {
+    public Optional<List<Projectile>> update(double timeDelta, List<Tower.EnemyWithPositioning> enemies) {
         enemies.forEach(enemy -> {
             enemy.enemy.dealDotDamage(25 * timeDelta);
         });
+        return Optional.empty();
     }
 
     @Override

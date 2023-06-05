@@ -84,6 +84,7 @@ public class StageView implements GameView, InputProcessor {
         drawGrid();
         renderEnemies();
         renderTowers();
+        renderProjectiles();
 
         uiMenu.drawUi(runningStage, batch, shapeRenderer, hoveredGrid(), gridToRenderable(Point.of(hoveredGrid())), runningStage.getGridSize());
 
@@ -198,6 +199,34 @@ public class StageView implements GameView, InputProcessor {
             tower.drawShapeEffects(renderedLocations.get(tower), gridSize, shapeRenderer);
         });
         shapeRenderer.end();
+    }
+
+    private void renderProjectiles() {
+        var gridSize = runningStage.getGridSize();
+
+        batch.begin();
+
+        int i = 0;
+        for(var proj : runningStage.getProjectiles()) {
+            i++;
+            var texture = proj.getTexture();
+            var pos = gridToRenderable(proj.getPosition());
+            var size = proj.getVisualSize();
+            batch.draw(texture,
+                (float) (pos.getX()),
+                (float) (pos.getY()),
+                (float) (texture.getRegionWidth()/2),
+                (float) (texture.getRegionHeight()/2),
+                (float) (gridSize * size),
+                (float) (gridSize * size),
+                1.0f,
+                1.0f,
+                (float) proj.getRadians()
+            );
+        }
+        System.out.println("Rendered " + i + " projectiles");
+
+        batch.end();
     }
 
     @Override
