@@ -67,7 +67,7 @@ public class MainMenuView implements GameView {
 
         if (Gdx.input.justTouched()) {
             if (startButtonBounds.contains(clickedPoint)) {
-                return Optional.of(new StageView(new RunningStage(new TestStage(), new Resources())));
+                return Optional.of(new StageView(new RunningStage(new TestStage(), new Resources(10, 1000))));
             } else if (exitButtonBounds.contains(clickedPoint)) {
                 Gdx.app.exit();
             }

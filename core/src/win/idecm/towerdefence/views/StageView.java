@@ -213,15 +213,15 @@ public class StageView implements GameView, InputProcessor {
             var pos = gridToRenderable(proj.getPosition());
             var size = proj.getVisualSize();
             batch.draw(texture,
-                (float) (pos.getX()),
-                (float) (pos.getY()),
+                (float) (pos.getX() - texture.getRegionWidth()/2),
+                (float) (pos.getY() - texture.getRegionHeight()/2),
                 (float) (texture.getRegionWidth()/2),
                 (float) (texture.getRegionHeight()/2),
                 (float) (gridSize * size),
                 (float) (gridSize * size),
                 1.0f,
                 1.0f,
-                (float) proj.getRadians()
+                (float) (-proj.getRadians() / Math.PI * 180.0f)
             );
         }
         System.out.println("Rendered " + i + " projectiles");

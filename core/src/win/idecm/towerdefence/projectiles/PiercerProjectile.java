@@ -31,7 +31,12 @@ public class PiercerProjectile extends Projectile {
 
     @Override
     protected double getBaseVelocity() {
-        return 10.0;
+        return 20.0;
+    }
+
+    @Override
+    protected double getBaseLifetime() {
+        return 0.45;
     }
 
     @Override
