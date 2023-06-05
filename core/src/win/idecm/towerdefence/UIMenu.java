@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import win.idecm.towerdefence.towers.PiercerTower;
 import win.idecm.towerdefence.towers.TestAoeTower;
 
 import java.util.Optional;
@@ -104,7 +105,11 @@ public class UIMenu {
     public Optional<Consumer<RunningStage>> onClick(float x, float y) {
         if (x < leftOffset) {
             return Optional.of(runningStage -> {
-                runningStage.tryPurchasingTower(new TestAoeTower(), lastHovered);
+                if(Math.random() > 0.5) {
+                    runningStage.tryPurchasingTower(new TestAoeTower(lastHovered));
+                } else {
+                    runningStage.tryPurchasingTower(new PiercerTower(lastHovered));
+                }
             });
         }
         return Optional.empty();

@@ -38,11 +38,13 @@ public class Point {
         return new Point(getX() * other.getX(), getY() * other.getY());
     }
 
-
-    public double distanceTo(Point other) {
+    public double distanceSquaredTo(Point other) {
         var dx = getX() - other.getX();
         var dy = getY() - other.getY();
-        return Math.sqrt(dx*dx + dy*dy);
+        return dx*dx + dy*dy;
+    }
+    public double distanceTo(Point other) {
+        return Math.sqrt(distanceSquaredTo(other));
     }
 
     public Point addVector(Point vector) {

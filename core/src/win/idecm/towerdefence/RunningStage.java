@@ -12,7 +12,7 @@ public class RunningStage {
     Texture background;
     List<RunningEnemy> enemies;
 
-    Map<GridPoint, RunningTower> runningTowers;
+    Map<GridPoint, Tower> runningTowers;
 
     Resources resources;
     List<EnemyPath> savedPaths;
@@ -69,15 +69,15 @@ public class RunningStage {
     private void processTowers(double timeDelta) {
         runningTowers.entrySet().forEach(gridPointRunningTowerEntry -> {
             var tower = gridPointRunningTowerEntry.getValue();
-            var enemiesInRange = new ArrayList<RunningEnemy>();
+            var enemiesInRange = new ArrayList<Tower.EnemyWithPositioning>();
             enemies.forEach(enemy -> {
                 var enemyLoc = getEnemyLocation(enemy);
                 var towerLoc = tower.getCenterPoint();
                 if (enemyLoc.distanceTo(towerLoc) <= tower.getRange() + 0.05) {
-                    enemiesInRange.add(enemy);
+                    enemiesInRange.add(new Tower.EnemyWithPositioning(enemy, enemyLoc));
                 }
             });
-            tower.onGameTickWithEnemies(timeDelta, enemiesInRange);
+            tower.update(timeDelta, enemiesInRange);
         });
     }
 
@@ -97,14 +97,15 @@ public class RunningStage {
         return resources;
     }
 
-    public boolean tryPurchasingTower(TowerKind kind, GridPoint location) {
+    public boolean tryPurchasingTower(Tower tower) {
+        var location = tower.getLocation();
         if (runningTowers.containsKey(location)) {
             return false;
         }
 
-        if (getResources().hasMoneyToBuy(kind.getBasePrice())) {
-            getResources().spendMoney(kind.getBasePrice());
-            runningTowers.put(location, new RunningTower(kind, location));
+        if (getResources().hasMoneyToBuy(tower.getBasePrice())) {
+            getResources().spendMoney(tower.getBasePrice());
+            runningTowers.put(location, tower);
             return true;
         } else {
             return false;
@@ -159,7 +160,7 @@ public class RunningStage {
         return background.getHeight();
     }
 
-    public Collection<RunningTower> getRunningTowers() {
+    public Collection<Tower> getRunningTowers() {
         return runningTowers.values();
     }
 
