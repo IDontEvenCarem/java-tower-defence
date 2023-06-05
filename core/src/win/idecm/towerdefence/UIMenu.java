@@ -57,7 +57,7 @@ public class UIMenu {
         drawStatusPart(batch);
         drawPurchasePart(batch);
 
-        if (hoveredRenderable.getX() > leftOffset) {
+        if (hoveredRenderable.getX() >= leftOffset) {
             drawTipBox(batch);
         }
 
