@@ -23,6 +23,8 @@ public class UIMenu {
     private int totalWidth;
     private int totalHeight;
 
+    static final private float topPartFract = 0.2f;
+
     private Set<GridPoint> bannedGridPoints;
     private Texture hoverNeutral;
     private Texture hoverDisallowed;
@@ -30,6 +32,7 @@ public class UIMenu {
 
     private GridPoint lastHovered;
 
+    private SpriteBatch batch;
 
     public UIMenu (int left, int width, int height, Resources resources, Set<GridPoint> bannedGridPoints) {
         this.resources = resources;
@@ -52,13 +55,14 @@ public class UIMenu {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         batch.begin();
+        this.batch = batch;
 
-        drawRect(batch, leftOffset, 0, totalWidth, totalHeight);
+        drawStatusPart(batch);
+        drawPurchasePart(batch);
 
-        font.setColor(Color.BLACK);
-        font.getData().setScale(1.0f);
-        var moneydraw = font.draw(batch, "$" + resources.getMoney(),  leftOffset + 10, totalHeight - 10);
-        var heartsdraw = font.draw(batch, "♥" + resources.getLife(), leftOffset + 10, totalHeight - 15 - moneydraw.height);
+        if (hoveredRenderable.getX() > leftOffset) {
+            drawTipBox(batch);
+        }
 
         if (hoveredRenderable.getX() < leftOffset) {
             if (bannedGridPoints.contains(hovered)) {
@@ -71,6 +75,25 @@ public class UIMenu {
 
         batch.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    public void drawStatusPart(Batch b) {
+        var height = (int) (topPartFract * totalHeight);
+        nPatch.draw(b, leftOffset, totalHeight - height, totalWidth, height);
+
+        font.setColor(Color.WHITE);
+        font.getData().setScale(2.0f);
+        var moneydraw = font.draw(batch, "$  " + resources.getMoney(),  leftOffset + 20, totalHeight - 20);
+        var heartsdraw = font.draw(batch, "<3 " + resources.getLife(), leftOffset + 20, totalHeight - 25 - moneydraw.height);
+    }
+
+    public void drawPurchasePart(Batch b) {
+        var statusPartHeight = (int) (topPartFract * totalHeight);
+        nPatch.draw(b, leftOffset, 0, totalWidth, totalHeight - statusPartHeight);
+    }
+
+    public void drawTipBox(Batch b) {
+        nPatch.draw(b, leftOffset - totalWidth, 0, totalWidth, (float) (totalHeight * 0.2));
     }
 
     public void drawHoveredGrid (Batch b) {
