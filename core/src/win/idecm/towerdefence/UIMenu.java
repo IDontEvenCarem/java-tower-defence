@@ -10,8 +10,7 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
-import win.idecm.towerdefence.towers.PiercerTower;
-import win.idecm.towerdefence.towers.TestAoeTower;
+import win.idecm.towerdefence.towers.*;
 
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +19,7 @@ import java.util.function.Consumer;
 public class UIMenu {
     private Resources resources;
     private BitmapFont font;
-
+    private int selectedTowerIndex = -1;
     private int leftOffset;
     private int totalWidth;
     private int totalHeight;
@@ -205,17 +204,39 @@ public class UIMenu {
     public void scroll(float amount) {
 
     }
-
     public Optional<Consumer<RunningStage>> onClick(float x, float y) {
-        if (x < leftOffset) {
-            return Optional.of(runningStage -> {
-                if (Math.random() > 0.5) {
-                    runningStage.tryPurchasingTower(new TestAoeTower(lastHovered));
-                } else {
-                    runningStage.tryPurchasingTower(new PiercerTower(lastHovered));
-                }
-            });
+        if (x >= leftOffset) {
+            int towerIndex = getTowerIndex(new Point(x, y));
+            if (towerIndex >= 0) {
+                selectedTowerIndex = towerIndex;
+            }
         }
-        return Optional.empty();
+                if (x < leftOffset) {
+                    return Optional.of(runningStage -> {
+                        if (selectedTowerIndex != -1 && lastHovered != null && !bannedGridPoints.contains(lastHovered)) {
+                            switch (selectedTowerIndex) {
+                                case 0:
+                                    runningStage.tryPurchasingTower(new PiercerTower(lastHovered));
+                                    break;
+                                case 1:
+                                    runningStage.tryPurchasingTower(new ArcherTower(lastHovered));
+                                    break;
+                                case 2:
+                                    runningStage.tryPurchasingTower(new DruidTower(lastHovered));
+                                    break;
+                                case 3:
+                                    runningStage.tryPurchasingTower(new WizardTower(lastHovered));
+                                    break;
+                                case 4:
+                                    runningStage.tryPurchasingTower(new InfernoTower(lastHovered));
+                                    break;
+                                case 5:
+                                    runningStage.tryPurchasingTower(new RoyalTower(lastHovered));
+                                    break;
+                            }
+                        }
+                    });
+                }
+                return Optional.empty();
     }
 }
