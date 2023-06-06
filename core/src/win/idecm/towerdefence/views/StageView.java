@@ -26,7 +26,7 @@ public class StageView implements GameView, InputProcessor {
     // we want the total to be 16:9 aspect ratio
     static final int MAP_WIDTH = 1400;
     static final int TOTAL_HEIGHT = 900;
-    static final int UI_WIDTH = 200;
+    static final int UI_WIDTH = 300;
 
     private float mouse_x = 0;
     private float mouse_y = 0;
@@ -224,7 +224,6 @@ public class StageView implements GameView, InputProcessor {
                 (float) (-proj.getRadians() / Math.PI * 180.0f)
             );
         }
-        System.out.println("Rendered " + i + " projectiles");
 
         batch.end();
     }
@@ -286,6 +285,7 @@ public class StageView implements GameView, InputProcessor {
         var unprojected = viewport.unproject(new Vector2(screenX, screenY));
         mouse_x = unprojected.x;
         mouse_y = unprojected.y;
+        uiMenu.setMousePos(Point.of(mouse_x, mouse_y));
         return true;
     }
 

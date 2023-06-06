@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class InfernoTower extends Tower {
-    static Texture towerTexture = new Texture("TowerStage5.png");
+    public static Texture towerTexture = new Texture("TowerStage5.png");
+    public static String name = "Inferno Tower";
     static Texture ringOfFire = new Texture("ring_of_fire_50.png");
     static TextureRegion ringOfFireRegion = new TextureRegion(ringOfFire);
 
@@ -22,7 +23,7 @@ public class InfernoTower extends Tower {
 
     @Override
     public String getName() {
-        return "Inferno Tower";
+        return name;
     }
 
     @Override

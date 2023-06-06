@@ -4,19 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
 import win.idecm.towerdefence.towers.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class UIMenu {
+    private static final int TOWER_BUY_BUTTONS_GAP = 20;
+    private static final int TOWER_BUY_BUTTON_HEIGHT = 80;
+
     private Resources resources;
     private BitmapFont font;
     private int selectedTowerIndex = -1;
@@ -32,11 +35,33 @@ public class UIMenu {
     private Texture heartIcon = new Texture("heart.png");
     private NinePatch nPatch;
 
+    private Optional<Tower> selectedTower = Optional.empty();
+
     private GridPoint lastHovered;
+    private Point lastHoveredRenderable;
+    private Point mousePos = Point.of(0);
 
     private Texture[] towerTextures;
     private Texture levelUpArrowTexture;
     Texture levelArrow = new Texture("LvlUpArrow.png");
+
+    private class MenuTowerEntry {
+        public String name;
+        public Texture texture;
+        public Function<GridPoint, Tower> spawnerFn;
+        public int price;
+        public String description;
+
+        public MenuTowerEntry(String name, Texture texture, Function<GridPoint, Tower> spawnerFn, int price, String description) {
+            this.name = name;
+            this.texture = texture;
+            this.spawnerFn = spawnerFn;
+            this.price = price;
+            this.description = description;
+        }
+    };
+    private List<MenuTowerEntry> purchasableTowers = new ArrayList<>();
+    private List<Button> towerButtons = new ArrayList<>();
 
     private String[] towerDescriptions = {
             "Piercer Tower, Damage 50,   Level 1",
@@ -62,12 +87,25 @@ public class UIMenu {
         nPatch = new NinePatch(new Texture("9patch-bg.png"), 32, 32, 32, 32);
         nPatch.scale(2, 2);
 
-        this.bannedGridPoints = bannedGridPoints;
+        purchasableTowers.add(new MenuTowerEntry(
+            PiercerTower.name,
+            PiercerTower.towerTexture,
+            PiercerTower::new,
+            PiercerTower.basePrice,
+            "Quick shots that go through many enemies"
+        ));
 
-        towerTextures = new Texture[6];
-        for (int i = 0; i < 6; i++) {
-            towerTextures[i] = new Texture("TowerStage" + (i + 1) + ".png");
-        }
+        purchasableTowers.add(new MenuTowerEntry(
+            WizardTower.name,
+            WizardTower.towerTexture,
+            WizardTower::new,
+            WizardTower.basePrice,
+            "Consistent damage over a large area"
+        ));
+
+        layoutButtons();
+
+        this.bannedGridPoints = bannedGridPoints;
 
         levelUpArrowTexture = new Texture("LvlUpArrow.png");
 
@@ -79,6 +117,7 @@ public class UIMenu {
 
     public void drawUi(RunningStage stage, SpriteBatch batch, ShapeRenderer shapeRenderer, GridPoint hovered, Point hoveredRenderable, int gridSize) {
         lastHovered = hovered;
+        lastHoveredRenderable = hoveredRenderable;
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -90,7 +129,7 @@ public class UIMenu {
 
         if (hoveredRenderable.getX() >= leftOffset && !bannedGridPoints.contains(hovered)) {
             showTipBox = true;
-            updateCurrentTowerDescription(hoveredRenderable);
+            updateCurrentTowerDescription(mousePos);
             drawTipBox(batch);
         } else {
             showTipBox = false;
@@ -100,31 +139,51 @@ public class UIMenu {
             drawHoveredGrid(batch, hovered, hoveredRenderable, gridSize);
         }
 
-        drawTowerIcons(batch);
+        if (selectedTower.isEmpty()) {
+            drawTowerIcons(batch);
+        } else {
+
+        }
 
         batch.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    private void updateCurrentTowerDescription(Point hoveredRenderable) {
-        int towerIndex = getTowerIndex(hoveredRenderable);
+    private void updateCurrentTowerDescription(Point mousePos) {
+        int towerIndex = getTowerIndex(mousePos);
         if (towerIndex >= 0) {
-            currentTowerDescription = towerDescriptions[towerIndex];
+            var pt = purchasableTowers.get(towerIndex);
+            currentTowerDescription = pt.name + "\nPrice: $" + pt.price + '\n' + pt.description;
         } else {
             currentTowerDescription = "";
         }
     }
 
-    private int getTowerIndex(Point hoveredRenderable) {
-        float iconSize = 48;
-        float iconSpacing = 8;
-        float startY = totalHeight - topPartFract * totalHeight - iconSize - 8;
+    private int getTowerIndex(Point mousePos) {
+        for (int i = 0; i < towerButtons.size(); i++) {
+            if (towerButtons.get(i).isInside(mousePos)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-        int towerIndex = (int) ((startY - hoveredRenderable.getY()) / (iconSize + iconSpacing));
-        if (towerIndex >= 0 && towerIndex < towerTextures.length) {
-            return towerIndex;
-        } else {
-            return -1;
+    private void layoutButtons() {
+        var width = totalWidth - TOWER_BUY_BUTTONS_GAP*2;
+        var height = TOWER_BUY_BUTTON_HEIGHT;
+
+        var startY = totalHeight * (1.0 - topPartFract) - TOWER_BUY_BUTTONS_GAP - height;
+
+        towerButtons.clear();
+        var offset = 0;
+        for(var tower : purchasableTowers) {
+            towerButtons.add(new Button(
+                leftOffset + TOWER_BUY_BUTTONS_GAP,
+                (int) (startY - offset),
+                width,
+                height
+            ));
+            offset += height + TOWER_BUY_BUTTONS_GAP;
         }
     }
 
@@ -156,9 +215,9 @@ public class UIMenu {
 
         font.getData().setScale(1.5f);
         font.setColor(Color.WHITE);
-        float textX = leftOffset - totalWidth + 10;
+        float textX = leftOffset - totalWidth + 20;
         float textY = (float) (totalHeight * 0.2) - 20;
-        font.draw(b, currentTowerDescription, textX, textY, totalWidth - 20, Align.topLeft, true);
+        font.draw(b, currentTowerDescription, textX, textY, totalWidth - 40, Align.topLeft, true);
     }
 
 
@@ -170,26 +229,35 @@ public class UIMenu {
         }
     }
 
-    public void drawTowerIcons(Batch b) {
-        float iconSize = 48;
+    public void drawTowerIcons(SpriteBatch b) {
+        float iconSize = TOWER_BUY_BUTTON_HEIGHT - 20;
         float iconSpacing = 8;
         float startY = totalHeight - topPartFract * totalHeight - iconSize - 8; // Dostosowana pozycja do ikon wież
 
-        int basePrice = 100; // Bazowa cena dla pierwszej wieży
-        for (int i = 0; i < towerTextures.length; i++) {
-            float y = startY - (iconSize + iconSpacing) * i;
-            b.draw(towerTextures[i], leftOffset + 8, y, iconSize, iconSize);
+        for (int i = 0; i < towerButtons.size(); i++) {
+            towerButtons.get(i).draw(b, mousePos,
+                selectedTowerIndex == i,
+                !resources.hasMoneyToBuy(purchasableTowers.get(i).price)
+            );
+        }
+
+        for (int i = 0; i < towerButtons.size(); i++) {
+            var button = towerButtons.get(i);
+            var pt = purchasableTowers.get(i);
+
+            float y = button.getY() + 10;
+            b.draw(pt.texture, leftOffset + TOWER_BUY_BUTTONS_GAP + 10, y, iconSize, iconSize);
 
             // Rysuj cenę wieży
-            font.getData().setScale(1.5f);
-            String priceText = "$ " + (basePrice + (i * 100));
-            float priceX = leftOffset + 8 + iconSize + 8;
+            font.getData().setScale(2.0f);
+            String priceText = "$ " + pt.price;
+            float priceX = leftOffset + TOWER_BUY_BUTTONS_GAP + 12 + 8 + iconSize + 8;
             float priceY = y + iconSize / 2 + font.getLineHeight() / 2;
             font.setColor(Color.WHITE);
             font.draw(b, priceText, priceX, priceY);
 
             // Rysuj poziom wieży
-            float arrowX = priceX + font.getCapHeight() + 50;
+            float arrowX = priceX + font.getCapHeight() + 80;
             float arrowY = priceY - font.getLineHeight() / 2 - 5;
             b.draw(levelArrow, arrowX, arrowY, 24, 24);
             String towerLevel = "1";
@@ -200,7 +268,9 @@ public class UIMenu {
         }
     }
 
-
+    public void setMousePos (Point mousePos) {
+        this.mousePos = mousePos;
+    }
 
     public void scroll(float amount) {
 
@@ -209,35 +279,19 @@ public class UIMenu {
         if (x >= leftOffset) {
             int towerIndex = getTowerIndex(new Point(x, y));
             if (towerIndex >= 0) {
-                selectedTowerIndex = towerIndex;
+                if (towerIndex == selectedTowerIndex) {
+                    selectedTowerIndex = -1;
+                } else {
+                    selectedTowerIndex = towerIndex;
+                }
             }
         }
-                if (x < leftOffset) {
-                    return Optional.of(runningStage -> {
-                        if (selectedTowerIndex != -1 && lastHovered != null && !bannedGridPoints.contains(lastHovered)) {
-                            switch (selectedTowerIndex) {
-                                case 0:
-                                    runningStage.tryPurchasingTower(new PiercerTower(lastHovered));
-                                    break;
-                                case 1:
-                                    runningStage.tryPurchasingTower(new ArcherTower(lastHovered));
-                                    break;
-                                case 2:
-                                    runningStage.tryPurchasingTower(new DruidTower(lastHovered));
-                                    break;
-                                case 3:
-                                    runningStage.tryPurchasingTower(new WizardTower(lastHovered));
-                                    break;
-                                case 4:
-                                    runningStage.tryPurchasingTower(new InfernoTower(lastHovered));
-                                    break;
-                                case 5:
-                                    runningStage.tryPurchasingTower(new RoyalTower(lastHovered));
-                                    break;
-                            }
-                        }
-                    });
-                }
-                return Optional.empty();
+        if (x < leftOffset) {
+            if (selectedTowerIndex != -1) {
+                var towerSpawner = purchasableTowers.get(selectedTowerIndex).spawnerFn;
+                return Optional.of(runningStage -> runningStage.tryPurchasingTower(towerSpawner.apply(lastHovered)));
+            }
+        }
+        return Optional.empty();
     }
 }

@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class TestAoeTower extends Tower {
-    static Texture towerTexture = new Texture("TowerStage6.png");
+    public static Texture towerTexture = new Texture("TowerStage6.png");
+    public static final String name = "Test AOE Tower";
     static Texture ringOfFire = new Texture("ring_of_fire_50.png");
     static TextureRegion ringOfFireRegion = new TextureRegion(ringOfFire);
 
@@ -22,7 +23,7 @@ public class TestAoeTower extends Tower {
 
     @Override
     public String getName() {
-        return "Test AOE";
+        return name;
     }
 
     @Override

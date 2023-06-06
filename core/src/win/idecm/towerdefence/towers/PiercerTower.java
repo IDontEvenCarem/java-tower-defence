@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class PiercerTower extends Tower {
-    static private final Texture towerTexture = new Texture("TowerStage1.png");
+    static public final Texture towerTexture = new Texture("TowerStage1.png");
+    static public final String name = "Piercer Tower";
+    static public final int basePrice = 50;
 
     public PiercerTower(GridPoint location) {
         super(location);
@@ -19,7 +21,7 @@ public class PiercerTower extends Tower {
 
     @Override
     public String getName() {
-        return "Piercer Tower";
+        return name;
     }
 
     @Override

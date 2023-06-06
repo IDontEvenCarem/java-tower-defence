@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class WizardTower extends Tower {
-    static Texture towerTexture = new Texture("TowerStage4.png");
+    public static Texture towerTexture = new Texture("TowerStage4.png");
+    public static String name = "Wizard Tower";
+    public static int basePrice = 400;
     static Texture ringOfFire = new Texture("ring_of_fire_50.png");
     static TextureRegion ringOfFireRegion = new TextureRegion(ringOfFire);
 
@@ -22,7 +24,7 @@ public class WizardTower extends Tower {
 
     @Override
     public String getName() {
-        return "Wizard Tower";
+        return name;
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public class ArcherTower extends Tower {
     static private final Texture towerTexture = new Texture("TowerStage2.png");
+    public static String name = "Archer Tower";
 
     public ArcherTower(GridPoint location) {
         super(location);
@@ -19,7 +20,7 @@ public class ArcherTower extends Tower {
 
     @Override
     public String getName() {
-        return "Archer Tower";
+        return name;
     }
 
     @Override

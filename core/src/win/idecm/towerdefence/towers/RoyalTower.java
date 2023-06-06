@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoyalTower extends Tower {
-    static Texture towerTexture = new Texture("TowerStage6.png");
+    public static Texture towerTexture = new Texture("TowerStage6.png");
+    public static final String name = "Royal Tower";
     static Texture ringOfFire = new Texture("ring_of_fire_50.png");
     static TextureRegion ringOfFireRegion = new TextureRegion(ringOfFire);
 
@@ -22,7 +23,7 @@ public class RoyalTower extends Tower {
 
     @Override
     public String getName() {
-        return "Royal Tower";
+        return name;
     }
 
     @Override
