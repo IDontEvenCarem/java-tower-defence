@@ -29,12 +29,15 @@ public class UIMenu {
     private Set<GridPoint> bannedGridPoints;
     private Texture hoverNeutral;
     private Texture hoverDisallowed;
+    private Texture heartIcon = new Texture("heart.png");
     private NinePatch nPatch;
 
     private GridPoint lastHovered;
 
     private Texture[] towerTextures;
     private Texture levelUpArrowTexture;
+    Texture levelArrow = new Texture("LvlUpArrow.png");
+
     private String[] towerDescriptions = {
             "Piercer Tower, Damage 50,   Level 1",
             "Archer Tower, Damage 60,   Level 1",
@@ -134,7 +137,6 @@ public class UIMenu {
         var moneydraw = font.draw(b, "$  " + resources.getMoney(), leftOffset + 20, totalHeight - 20);
 
         // Draw heart icon
-        Texture heartIcon = new Texture("heart.png");
         float heartX = leftOffset + 20;
         float heartY = totalHeight - 25 - moneydraw.height - heartIcon.getHeight();
         b.draw(heartIcon, heartX, heartY);
@@ -187,7 +189,6 @@ public class UIMenu {
             font.draw(b, priceText, priceX, priceY);
 
             // Rysuj poziom wieży
-            Texture levelArrow = new Texture("LvlUpArrow.png");
             float arrowX = priceX + font.getCapHeight() + 50;
             float arrowY = priceY - font.getLineHeight() / 2 - 5;
             b.draw(levelArrow, arrowX, arrowY, 24, 24);
