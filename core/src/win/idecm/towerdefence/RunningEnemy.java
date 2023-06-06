@@ -1,5 +1,8 @@
 package win.idecm.towerdefence;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 public class RunningEnemy {
     private final EnemyKind kind;
     private final int pathIndex;
@@ -7,6 +10,10 @@ public class RunningEnemy {
     private double speed;
     private double health;
     private double maxHealth;
+    private double size;
+    private TextureRegion textureRegion;
+
+    private double frameSlow = 1.0f;
 
     public RunningEnemy(EnemyKind kind, int pathIndex) {
         this.kind = kind;
@@ -15,6 +22,12 @@ public class RunningEnemy {
         this.maxHealth = kind.getMaxHealth();
         this.health = kind.getMaxHealth();
         this.speed = kind.getSpeed();
+        this.size = kind.getSize();
+        this.textureRegion = new TextureRegion(kind.getTexture());
+    }
+
+    public TextureRegion getTextureRegion() {
+        return textureRegion;
     }
 
     public int getPathIndex() {
@@ -34,15 +47,23 @@ public class RunningEnemy {
     }
     public double getMaxHealth() { return maxHealth; }
 
-    public double getSize() { return kind.getSize(); }
+    public double getSize() { return size; }
 
     public void applyLifeMultiplier(double mult) {
         maxHealth *= mult;
         health *= mult;
     }
 
+    public void applySlow (double slow) {
+        frameSlow *= slow;
+        if (frameSlow < 0.5) {
+            frameSlow = 0.5;
+        }
+    }
+
     public void move(double timeElapsed) {
-        position += getSpeed() * timeElapsed;
+        position += getSpeed() * timeElapsed * frameSlow;
+        frameSlow = 1.0f;
     }
 
     public void dealDotDamage(double amount) {

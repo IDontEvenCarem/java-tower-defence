@@ -41,8 +41,6 @@ public class UIMenu {
     private Point lastHoveredRenderable;
     private Point mousePos = Point.of(0);
 
-    private Texture[] towerTextures;
-    private Texture levelUpArrowTexture;
     Texture levelArrow = new Texture("LvlUpArrow.png");
 
     private class MenuTowerEntry {
@@ -63,14 +61,6 @@ public class UIMenu {
     private List<MenuTowerEntry> purchasableTowers = new ArrayList<>();
     private List<Button> towerButtons = new ArrayList<>();
 
-    private String[] towerDescriptions = {
-            "Piercer Tower, Damage 50,   Level 1",
-            "Archer Tower, Damage 60,   Level 1",
-            "Druid Tower, Damage 70,   Level 1",
-            "Wizard Tower, Damage 85,   Level 1",
-            "Inferno Tower, Damage 110,   Level 1",
-            "Royal Tower, Damage 150,   Level 1"
-    };
     private int[] towerLevels;
 
     private boolean showTipBox;
@@ -96,18 +86,49 @@ public class UIMenu {
         ));
 
         purchasableTowers.add(new MenuTowerEntry(
+            ArcherTower.name,
+            ArcherTower.towerTexture,
+            ArcherTower::new,
+            ArcherTower.basePrice,
+            "Long range, large damage, but slow"
+        ));
+
+        purchasableTowers.add(new MenuTowerEntry(
+            DruidTower.name,
+            DruidTower.towerTexture,
+            DruidTower::new,
+            DruidTower.basePrice,
+            "Close range blast that can hit many enemies"
+        ));
+
+        purchasableTowers.add(new MenuTowerEntry(
             WizardTower.name,
             WizardTower.towerTexture,
             WizardTower::new,
             WizardTower.basePrice,
+            "Solid damage and a slowing effect in a small area"
+        ));
+
+        purchasableTowers.add(new MenuTowerEntry(
+            InfernoTower.name,
+            InfernoTower.towerTexture,
+            InfernoTower::new,
+            InfernoTower.basePrice,
             "Consistent damage over a large area"
         ));
+
+        purchasableTowers.add(new MenuTowerEntry(
+            RoyalTower.name,
+            RoyalTower.towerTexture,
+            RoyalTower::new,
+            RoyalTower.basePrice,
+            "As far as the sun reaches, your enemies shall fall"
+        ));
+
 
         layoutButtons();
 
         this.bannedGridPoints = bannedGridPoints;
-
-        levelUpArrowTexture = new Texture("LvlUpArrow.png");
 
         towerLevels = new int[6];
         for (int i = 0; i < 6; i++) {

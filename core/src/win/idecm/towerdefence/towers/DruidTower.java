@@ -13,6 +13,7 @@ import java.util.Optional;
 public class DruidTower extends Tower {
     static public final Texture towerTexture = new Texture("TowerStage3.png");
     static public final String name = "Druid Tower";
+    static public final int basePrice = 300;
 
     public DruidTower(GridPoint location) {
         super(location);
@@ -30,12 +31,12 @@ public class DruidTower extends Tower {
 
     @Override
     public int getBasePrice() {
-        return 300;
+        return basePrice;
     }
 
     @Override
     public double getBaseRange() {
-        return 5;
+        return 2.5;
     }
 
     @Override
@@ -52,9 +53,10 @@ public class DruidTower extends Tower {
             var to = enemy.get().position;
             var rad = Math.atan2(to.getY() - from.getY(), to.getX() - from.getX());
             if(checkAttackTiming()) {
-                System.out.println("Trying to shoot");
                 var projList = new ArrayList<Projectile>();
                 projList.add(new PiercerProjectile(this.getCenterPoint(), rad));
+                projList.add(new PiercerProjectile(this.getCenterPoint(), rad + 0.1));
+                projList.add(new PiercerProjectile(this.getCenterPoint(), rad - 0.1));
                 return Optional.of(projList);
             }
         }

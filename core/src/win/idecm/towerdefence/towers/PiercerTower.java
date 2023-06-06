@@ -53,7 +53,6 @@ public class PiercerTower extends Tower {
             var to = enemy.get().position;
             var rad = Math.atan2(to.getY() - from.getY(), to.getX() - from.getX());
             if(checkAttackTiming()) {
-                System.out.println("Trying to shoot");
                 var projList = new ArrayList<Projectile>();
                 projList.add(new PiercerProjectile(this.getCenterPoint(), rad));
                 return Optional.of(projList);

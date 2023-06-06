@@ -4,9 +4,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 abstract public class Tower {
     GridPoint location;
@@ -78,4 +80,6 @@ abstract public class Tower {
             return Double.compare(d1, d2);
         });
     };
+
+    public void injectRenderabler (Function<Point, Point> toRenderable) {}
 }

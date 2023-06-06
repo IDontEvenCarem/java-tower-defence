@@ -12,10 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class InfernoTower extends Tower {
-    public static Texture towerTexture = new Texture("TowerStage5.png");
-    public static String name = "Inferno Tower";
+    public static final Texture towerTexture = new Texture("TowerStage5.png");
+    public static final String name = "Inferno Tower";
     static Texture ringOfFire = new Texture("ring_of_fire_50.png");
     static TextureRegion ringOfFireRegion = new TextureRegion(ringOfFire);
+    static public final int basePrice = 500;
 
     public InfernoTower(GridPoint location) {
         super(location);
@@ -33,7 +34,7 @@ public class InfernoTower extends Tower {
 
     @Override
     public int getBasePrice() {
-        return 500;
+        return basePrice;
     }
 
     @Override
@@ -43,6 +44,7 @@ public class InfernoTower extends Tower {
 
     @Override
     public Optional<List<Projectile>> update(double timeDelta, List<EnemyWithPositioning> enemies) {
+        updateTiming(timeDelta);
         enemies.forEach(enemy -> {
             enemy.enemy.dealDotDamage(25 * timeDelta);
         });
@@ -51,9 +53,10 @@ public class InfernoTower extends Tower {
 
     @Override
     public void drawBatchEffects(Point renderLocation, int gridSize, SpriteBatch b) {
+        var scale = (float) (getRange() / 3.0);
         b.draw(ringOfFireRegion,
             (float) (renderLocation.getX() - ringOfFire.getWidth()/2 + gridSize/2), (float) (renderLocation.getY() - ringOfFire.getHeight()/2 + gridSize/2),
-            175.0f, 175.0f, 350.0f, 350.0f, 1.0f, 1.0f, getTime() * 60.0f
+            175.0f, 175.0f, 350.0f, 350.0f, scale, scale, getTime() * 60.0f
         );
     }
 }

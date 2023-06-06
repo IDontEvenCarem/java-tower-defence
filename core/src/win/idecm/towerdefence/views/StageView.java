@@ -56,6 +56,7 @@ public class StageView implements GameView, InputProcessor {
         input.setInputProcessor(this);
         shapeRenderer.setAutoShapeType(true);
         uiMenu = new UIMenu(MAP_WIDTH, UI_WIDTH, TOTAL_HEIGHT, runningStage.getResources(), runningStage.getBannedGridPoints());
+        runningStage.injectRenderabler(this::gridToRenderable);
     }
 
     public Point fixMapPoint(Point input) {
@@ -150,7 +151,7 @@ public class StageView implements GameView, InputProcessor {
         batch.begin();
         runningStage.getEnemies().forEach(renderInfo -> {
             var renderPos = gridToRenderable(renderInfo.position.addVector(Point.of(-renderInfo.size/2, renderInfo.size/2)));
-            batch.draw(renderInfo.textureRegion,
+            batch.draw(renderInfo.enemy.getTextureRegion(),
                     (float) (renderPos.getX()),
                     (float) (renderPos.getY()),
                     (float) (gridSize.getX() * renderInfo.size),
