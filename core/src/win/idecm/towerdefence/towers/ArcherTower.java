@@ -14,7 +14,7 @@ import java.util.Optional;
 public class ArcherTower extends Tower {
     static public final Texture towerTexture = new Texture("TowerStage2.png");
     public static final String name = "Archer Tower";
-    public static final int basePrice = 200;
+    public static final int basePrice = 120;
 
     public ArcherTower(GridPoint location) {
         super(location);

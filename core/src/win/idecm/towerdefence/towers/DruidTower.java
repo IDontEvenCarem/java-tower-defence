@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import win.idecm.towerdefence.GridPoint;
 import win.idecm.towerdefence.Projectile;
 import win.idecm.towerdefence.Tower;
+import win.idecm.towerdefence.projectiles.DruidProjectile;
 import win.idecm.towerdefence.projectiles.PiercerProjectile;
 
 import java.util.ArrayList;
@@ -54,9 +55,9 @@ public class DruidTower extends Tower {
             var rad = Math.atan2(to.getY() - from.getY(), to.getX() - from.getX());
             if(checkAttackTiming()) {
                 var projList = new ArrayList<Projectile>();
-                projList.add(new PiercerProjectile(this.getCenterPoint(), rad));
-                projList.add(new PiercerProjectile(this.getCenterPoint(), rad + 0.1));
-                projList.add(new PiercerProjectile(this.getCenterPoint(), rad - 0.1));
+                projList.add(new DruidProjectile(this.getCenterPoint(), rad));
+                projList.add(new DruidProjectile(this.getCenterPoint(), rad + 0.1));
+                projList.add(new DruidProjectile(this.getCenterPoint(), rad - 0.1));
                 return Optional.of(projList);
             }
         }

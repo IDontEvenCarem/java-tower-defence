@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 public interface StageKind {
     String getName();
+    String getDescription();
     List<EnemyPath> getPaths();
     String getBackgroundTexturePath();
 

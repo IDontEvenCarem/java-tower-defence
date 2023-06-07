@@ -246,6 +246,10 @@ public class UIMenu {
         if (bannedGridPoints.contains(hovered)) {
             b.draw(hoverDisallowed, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
         } else {
+            if (selectedTowerIndex != -1) {
+                var selectedArt = purchasableTowers.get(selectedTowerIndex).texture;
+                b.draw(selectedArt, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
+            }
             b.draw(hoverNeutral, (float) hoveredRenderable.getX(), (float) hoveredRenderable.getY(), gridSize, gridSize);
         }
     }

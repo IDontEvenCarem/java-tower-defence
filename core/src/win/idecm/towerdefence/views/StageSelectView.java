@@ -3,11 +3,14 @@ package win.idecm.towerdefence.views;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -34,6 +37,7 @@ public class StageSelectView implements GameView, InputProcessor {
     NinePatch nPatch = new NinePatch(new Texture("9patch-bg.png"), 32, 32, 32, 32);
     NinePatch borderPath = new NinePatch(new Texture("9patch-lil-borderonly.png"), 16, 16, 16, 16);
     NinePatch borderActivePath = new NinePatch(new Texture("9patch-lil-borderonly-active.png"), 16, 16, 16, 16);
+    private BitmapFont font = new BitmapFont();
 
     Point mouse_hovered = Point.of(Double.NEGATIVE_INFINITY);
 
@@ -53,14 +57,6 @@ public class StageSelectView implements GameView, InputProcessor {
 
     public StageSelectView () {
         stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
-        stages.add(new TestStage());
         for(var i = 0; i < stages.size(); i++) {
             stageClickAreas.add(this.getPositioningForStageImage(i));
         }
@@ -68,6 +64,7 @@ public class StageSelectView implements GameView, InputProcessor {
         borderPath.scale(2.0f, 2.0f);
         borderActivePath.scale(2.0f, 2.0f);
         textures.addAll(stages.stream().map(stage -> new Texture(stage.getBackgroundTexturePath())).collect(Collectors.toList()));
+        font.getData().setScale(3.0f);
     }
 
     @Override
@@ -85,6 +82,37 @@ public class StageSelectView implements GameView, InputProcessor {
         drawBackgrounds();
         drawPicks();
         startButton.draw(batch, mouse_hovered, false, selectedMapIdx == -1);
+        if (selectedMapIdx == -1) {
+            font.setColor(Color.GRAY);
+        } else {
+            font.setColor(Color.WHITE);
+        }
+        font.getData().setScale(3.0f);
+        font.draw(batch, "START", startButton.getX() + 10, startButton.getY() + startButton.getH()/2 + 12, startButton.getW() - 20.0f, Align.center, false);
+
+        if (selectedMapIdx != -1) {
+            var stage = stages.get(selectedMapIdx);
+            font.setColor(Color.WHITE);
+            font.getData().setScale(3.0f);
+            font.draw(batch,
+                stage.getName(),
+                WIDTH - OUTER_WINDOW_PADDING - RIGHT_PANELS_WIDTH + PICKER_PADDING/2,
+                HEIGHT - PICKER_PADDING - OUTER_WINDOW_PADDING,
+                RIGHT_PANELS_WIDTH - PICKER_PADDING,
+                Align.center,
+                false
+            );
+
+            font.getData().setScale(2.0f);
+            font.draw(batch,
+                stage.getDescription(),
+                WIDTH - OUTER_WINDOW_PADDING - RIGHT_PANELS_WIDTH + PICKER_PADDING/2,
+                HEIGHT - PICKER_PADDING - OUTER_WINDOW_PADDING - 60,
+                RIGHT_PANELS_WIDTH - PICKER_PADDING,
+                Align.center,
+                true
+            );
+        }
 
         batch.end();
 

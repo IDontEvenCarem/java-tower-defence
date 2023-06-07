@@ -26,17 +26,17 @@ public class DruidProjectile extends Projectile {
 
     @Override
     protected double getBaseDamage() {
-        return 25.0;
+        return 35.0;
     }
 
     @Override
     protected double getBaseVelocity() {
-        return 10.0;
+        return 15.0;
     }
 
     @Override
     protected double getBaseLifetime() {
-        return 0.15;
+        return 0.20;
     }
 
     @Override

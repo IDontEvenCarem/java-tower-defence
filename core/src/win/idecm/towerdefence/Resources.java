@@ -10,7 +10,7 @@ public class Resources {
     }
 
     public Resources() {
-        this(10, 1000);
+        this(10, 100);
     }
 
     public void loseLife (int lost) {

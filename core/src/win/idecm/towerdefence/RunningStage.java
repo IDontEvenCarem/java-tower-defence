@@ -169,6 +169,9 @@ public class RunningStage {
         if (runningTowers.containsKey(location)) {
             return false;
         }
+        if (bannedGridPoints.contains(location)) {
+            return false;
+        }
 
         if (getResources().hasMoneyToBuy(tower.getBasePrice())) {
             getResources().spendMoney(tower.getBasePrice());
